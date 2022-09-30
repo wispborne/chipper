@@ -1,8 +1,6 @@
 import 'package:chipper/desktop_drop.dart';
 import 'package:flutter/material.dart';
 
-import 'filedropper_win.dart';
-
 void main() {
   runApp(const MyApp());
 }
@@ -27,7 +25,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Chipper'),
     );
   }
 }
@@ -98,7 +96,6 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: const <Widget>[
-            Text("Hello"),
             DesktopDrop()
             // FileDropperWin()
             // FileDropper()
