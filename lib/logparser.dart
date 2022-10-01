@@ -11,7 +11,7 @@ class LogParser {
   final javaVersionRegex = RegExp(".*(Java version:.*)");
   final modListItemRegex = RegExp(".*-     (.*) \\(from .*");
   final errorBlockOpenPattern = "ERROR";
-  final errorBlockClosePattern = "Thread-";
+  final errorBlockClosePatterns =[ "[Thread-", "[main]"];
 
   final modList = List<String>.empty(growable: true);
   final errorBlock = List<LogLine>.empty(growable: true);
@@ -45,7 +45,7 @@ class LogParser {
           modList.clear(); // If we found the start of a modlist block, wipe any previous, older one.
         }
 
-        if (line.contains(errorBlockClosePattern)) {
+        if (errorBlockClosePatterns.any((element) => line.contains(element))) {
           isReadingError = false;
         }
 

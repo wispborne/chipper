@@ -1,3 +1,4 @@
+import 'package:chipper/extensions.dart';
 import 'package:chipper/logparser.dart';
 import 'package:collection/collection.dart';
 import 'package:desktop_drop/desktop_drop.dart';
@@ -142,7 +143,7 @@ class _DesktopDropState extends State<DesktopDrop> {
                                 itemBuilder: (BuildContext context, int index) {
                                   return Container(
                                       padding: (isConsecutiveWithPreviousLine(index))
-                                          ? const EdgeInsets.only(top: 5)
+                                          ? const EdgeInsets.only(top: 10)
                                           : const EdgeInsets.all(0),
                                       child: IntrinsicHeight(
                                           child: Row(children: [
@@ -154,10 +155,37 @@ class _DesktopDropState extends State<DesktopDrop> {
                                           )
                                         ]),
                                         Expanded(
-                                            child: Text(
-                                          _errors![index].fullError,
-                                          style: const TextStyle(fontFamily: 'RobotoMono'),
-                                        ))
+                                            child: RichText(
+                                                text: TextSpan(
+                                                    text: "",
+                                                    style: TextStyle(
+                                                        fontFamily: 'RobotoMono',
+                                                        color:
+                                                            Theme.of(context).colorScheme.onBackground.withAlpha(240)),
+                                                    children: [
+                                              if (_errors![index].time == null)
+                                                TextSpan(
+                                                  text: _errors![index].fullError,
+                                                ),
+                                              TextSpan(
+                                                  text: _errors![index].time,
+                                                  style: TextStyle(color: Theme.of(context).disabledColor)),
+                                              TextSpan(
+                                                  text: _errors![index].thread?.prepend(" "),
+                                                  style: TextStyle(color: Theme.of(context).hintColor)),
+                                              TextSpan(
+                                                  text: _errors![index].logLevel?.prepend(" "),
+                                                  style: TextStyle(color: Theme.of(context).disabledColor)),
+                                              TextSpan(
+                                                  text: _errors![index].namespace?.prepend(" "),
+                                                  style: TextStyle(
+                                                      color: Theme.of(context).colorScheme.tertiary.withAlpha(200))),
+                                              TextSpan(
+                                                  text: _errors![index].error?.prepend(" "),
+                                                  style: TextStyle(
+                                                      color:
+                                                          Theme.of(context).colorScheme.onBackground.withAlpha(240))),
+                                            ])))
                                       ])));
                                 }))
                       ])),
