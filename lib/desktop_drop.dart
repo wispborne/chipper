@@ -21,7 +21,7 @@ class _DesktopDropState extends State<DesktopDrop> {
   bool _dragging = false;
   Offset? offset;
   String msg = "Drop starsector.log here";
-  ScrollController scroller = ScrollController();
+  ScrollController _scroller = ScrollController();
 
   @override
   void didUpdateWidget(DesktopDrop oldWidget) {
@@ -34,7 +34,9 @@ class _DesktopDropState extends State<DesktopDrop> {
     }
 
     // Start at bottom, where errors live.
-    scroller.jumpTo(scroller.position.maxScrollExtent);
+    if (_scroller.hasClients) {
+      _scroller.jumpTo(_scroller.position.maxScrollExtent);
+    }
   }
 
   @override
@@ -57,9 +59,7 @@ class _DesktopDropState extends State<DesktopDrop> {
           if (logFile != null) LogParser().parse(logFile);
 
           setState(() {
-            if (logFile == null &&
-                detail.files
-                    .any((element) => wrongLogRegex.hasMatch(element.name))) {
+            if (logFile == null && detail.files.any((element) => wrongLogRegex.hasMatch(element.name))) {
               msg = "Log file should not end in a number.";
             }
           });
@@ -82,114 +82,86 @@ class _DesktopDropState extends State<DesktopDrop> {
           });
         },
         child: Container(
-            color:
-                _dragging ? Colors.blue.withOpacity(0.4) : Colors.transparent,
+            color: _dragging ? Colors.blue.withOpacity(0.4) : Colors.transparent,
             padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
             child: (widget.chips == null)
                 ? Container(
-                    constraints: const BoxConstraints(
-                        minWidth: double.infinity, minHeight: double.infinity),
+                    constraints: const BoxConstraints(minWidth: double.infinity, minHeight: double.infinity),
                     child: Center(
                         widthFactor: 1.5,
                         child: Text(
                           msg,
                           style: Theme.of(context).textTheme.headline4,
                         )))
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                        if (_javaVersion != null)
-                          Container(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(_javaVersion!,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge),
-                                ],
-                              )),
-                        if (_mods != null)
-                          Container(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("Mods",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge),
-                                  ConstrainedBox(
-                                      constraints:
-                                          const BoxConstraints(maxHeight: 150),
-                                      // child: Scrollbar(
-                                      //     scrollbarOrientation:
-                                      //         ScrollbarOrientation.left,
-                                      child: ListView.builder(
-                                          itemCount: _mods!.length,
-                                          shrinkWrap: true,
-                                          scrollDirection: Axis.vertical,
-                                          itemBuilder: (context, index) => Text(
-                                              "  ${_mods![index].trim()}")))
-                                ],
-                              )),
-                        if (_errors != null)
-                          // Scrollbar(
-                          //     scrollbarOrientation: ScrollbarOrientation.top,
-                          //     child: SingleChildScrollView(
-                          //         primary: true,
-                          //         scrollDirection: Axis.horizontal,
-                          //         child:
-                          Expanded(
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                Text("Errors",
-                                    style:
-                                        Theme.of(context).textTheme.titleLarge),
-                                Expanded(
-                                    // child: Scrollbar(
-                                    //     scrollbarOrientation:
-                                    //         ScrollbarOrientation.left,
-                                    child: ListView.builder(
-                                        itemCount: _errors!.length,
-                                        controller: scroller,
-                                        itemBuilder:
-                                            (BuildContext context, int index) {
-                                          return Container(
-                                              padding:
-                                                  (isConsecutiveWithPreviousLine(
-                                                          index))
-                                                      ? const EdgeInsets.only(
-                                                          top: 5)
-                                                      : const EdgeInsets.all(0),
-                                              child: IntrinsicHeight(
-                                                  child: Row(children: [
-                                                Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        " ${_errors![index].lineNumber} ",
-                                                        style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .hintColor,
-                                                            fontFamily:
-                                                                'RobotoMono'),
-                                                      )
-                                                    ]),
-                                                Expanded(
-                                                    child: Text(
-                                                  _errors![index].error,
-                                                  style: const TextStyle(
-                                                      fontFamily: 'RobotoMono'),
-                                                ))
-                                              ])));
-                                        }))
-                              ])),
-                      ])));
+                : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    if (_javaVersion != null)
+                      Container(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(_javaVersion!, style: Theme.of(context).textTheme.titleLarge),
+                            ],
+                          )),
+                    if (_mods != null)
+                      Container(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Mods", style: Theme.of(context).textTheme.titleLarge),
+                              ConstrainedBox(
+                                  constraints: const BoxConstraints(maxHeight: 150),
+                                  // child: Scrollbar(
+                                  //     scrollbarOrientation:
+                                  //         ScrollbarOrientation.left,
+                                  child: ListView.builder(
+                                      itemCount: _mods!.length,
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.vertical,
+                                      itemBuilder: (context, index) => Text("  ${_mods![index].trim()}")))
+                            ],
+                          )),
+                    if (_errors != null)
+                      // Scrollbar(
+                      //     scrollbarOrientation: ScrollbarOrientation.top,
+                      //     child: SingleChildScrollView(
+                      //         primary: true,
+                      //         scrollDirection: Axis.horizontal,
+                      //         child:
+                      Expanded(
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text("Errors", style: Theme.of(context).textTheme.titleLarge),
+                        Expanded(
+                            // child: Scrollbar(
+                            //     scrollbarOrientation:
+                            //         ScrollbarOrientation.left,
+                            child: ListView.builder(
+                                itemCount: _errors!.length,
+                                controller: _scroller,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Container(
+                                      padding: (isConsecutiveWithPreviousLine(index))
+                                          ? const EdgeInsets.only(top: 5)
+                                          : const EdgeInsets.all(0),
+                                      child: IntrinsicHeight(
+                                          child: Row(children: [
+                                        Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                                          Text(
+                                            " ${_errors![index].lineNumber} ",
+                                            style:
+                                                TextStyle(color: Theme.of(context).hintColor, fontFamily: 'RobotoMono'),
+                                          )
+                                        ]),
+                                        Expanded(
+                                            child: Text(
+                                          _errors![index].fullError,
+                                          style: const TextStyle(fontFamily: 'RobotoMono'),
+                                        ))
+                                      ])));
+                                }))
+                      ])),
+                  ])));
   }
 
   bool isConsecutiveWithPreviousLine(int index) {

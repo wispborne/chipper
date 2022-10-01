@@ -53,8 +53,30 @@ class LogChips {
 // }
 
 class LogLine {
+  final RegExp _logRegex = RegExp("(?<millis>\\d*?) +(?<thread>\\[.*?\\]) +(?<level>\\w+?) +(?<namespace>.*?) +- +(?<error>.*)");
   int lineNumber;
-  String error;
 
-  LogLine(this.lineNumber, this.error);
+  String? time;
+  String? thread;
+  String? logLevel;
+  String? namespace;
+  String? error;
+
+  String fullError;
+
+  LogLine(this.lineNumber, this.fullError) {
+    _parse();
+  }
+
+  void _parse() {
+    final match = _logRegex.firstMatch(fullError);
+
+    if (match != null) {
+      time = match.namedGroup("millis");
+      thread = match.namedGroup("thread");
+      logLevel = match.namedGroup("level");
+      namespace = match.namedGroup("namespace");
+      error = match.namedGroup("error");
+    }
+  }
 }

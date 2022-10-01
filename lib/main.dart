@@ -17,7 +17,7 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  static const title = "Chipper v1.0.1";
+  static const title = "Chipper v1.1.0";
   static const subtitle = "  by Wisp";
 
   @override
@@ -153,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (chips != null) {
             Clipboard.setData(ClipboardData(
                 text: chips?.errorBlock
-                    .map((e) => "${e.lineNumber}: ${e.error}")
+                    .map((e) => "${e.lineNumber}: ${e.fullError}")
                     .join('\n')));
           }
         },

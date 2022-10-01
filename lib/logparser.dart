@@ -30,8 +30,7 @@ class LogParser {
           .transform(const LineSplitter())
           .forEach((line) {
         if (javaVersion == null && javaVersionRegex.hasMatch(line)) {
-          javaVersion = javaVersionRegex.firstMatch(line)?.group(1) ??
-              "(no java version in log)";
+          javaVersion = javaVersionRegex.firstMatch(line)?.group(1) ?? "(no java version in log)";
         }
 
         if (line.contains(modBlockEndPattern)) {
@@ -41,11 +40,9 @@ class LogParser {
         if (isReadingModList) {
           modList.add(modListItemRegex.firstMatch(line)?.group(1) ?? line);
         }
-
         if (line.contains(modBlockOpenRegex)) {
           isReadingModList = true;
-          modList
-              .clear(); // If we found the start of a modlist block, wipe any previous, older one.
+          modList.clear(); // If we found the start of a modlist block, wipe any previous, older one.
         }
 
         if (line.contains(errorBlockClosePattern)) {
@@ -63,8 +60,7 @@ class LogParser {
         index++;
       });
 
-      var chips = LogChips(javaVersion, UnmodifiableListView(modList),
-          UnmodifiableListView(errorBlock));
+      var chips = LogChips(javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock));
       AppState.loadedLog.chips = chips;
       print("Parsing took ${stopwatch.elapsedMilliseconds} ms");
       // return chips;

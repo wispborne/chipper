@@ -207,3 +207,4 @@ fabric.properties
 .idea/**/azureSettings.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/dart,intellij,flutter
+chipper.config/chippertheme.lock
