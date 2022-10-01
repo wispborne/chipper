@@ -57,7 +57,7 @@ class LogParser {
         }
 
         if (isReadingError) {
-          errorBlock.add(LogLine(index, line));
+          errorBlock.add(LogLine(index + 1, line));
         }
 
         index++;

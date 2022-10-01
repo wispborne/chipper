@@ -16,10 +16,12 @@ class DesktopDrop extends StatefulWidget {
 
 class _DesktopDropState extends State<DesktopDrop> {
   String? _javaVersion;
-  String? _mods;
+  UnmodifiableListView<String>? _mods;
   List<LogLine>? _errors;
   bool _dragging = false;
   Offset? offset;
+  String msg = "Drop starsector.log here";
+  ScrollController scroller = ScrollController();
 
   @override
   void didUpdateWidget(DesktopDrop oldWidget) {
@@ -27,9 +29,12 @@ class _DesktopDropState extends State<DesktopDrop> {
     final logChips = widget.chips;
     if (logChips != null) {
       _javaVersion = "${logChips.javaVersion}";
-      _mods = logChips.modList.map((e) => "  $e\n").join();
+      _mods = logChips.modList;
       _errors = logChips.errorBlock;
     }
+
+    // Start at bottom, where errors live.
+    scroller.jumpTo(scroller.position.maxScrollExtent);
   }
 
   @override
@@ -44,8 +49,9 @@ class _DesktopDropState extends State<DesktopDrop> {
                 '  ${file.mimeType}');
           }
 
-          final logFile = detail.files
-              .firstWhereOrNull((element) => element.name == "starsector.log");
+          final logFile = detail.files.first;
+          // No need to filter by name for now, in case file has (Copy) or (1) in it.
+          // .firstWhereOrNull((element) => element.name == "starsector.log");
 
           final wrongLogRegex = RegExp(".*\.log\./d", caseSensitive: false);
           if (logFile != null) LogParser().parse(logFile);
@@ -54,7 +60,7 @@ class _DesktopDropState extends State<DesktopDrop> {
             if (logFile == null &&
                 detail.files
                     .any((element) => wrongLogRegex.hasMatch(element.name))) {
-              _mods = "Log file should not end in a number.";
+              msg = "Log file should not end in a number.";
             }
           });
         },
@@ -86,7 +92,7 @@ class _DesktopDropState extends State<DesktopDrop> {
                     child: Center(
                         widthFactor: 1.5,
                         child: Text(
-                          "Drop starsector.log here",
+                          msg,
                           style: Theme.of(context).textTheme.headline4,
                         )))
                 : Column(
@@ -105,18 +111,29 @@ class _DesktopDropState extends State<DesktopDrop> {
                                 ],
                               )),
                         if (_mods != null)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Mods",
-                                  style:
-                                      Theme.of(context).textTheme.titleLarge),
-                              Text(
-                                _mods!,
-                                softWrap: false,
-                              )
-                            ],
-                          ),
+                          Container(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Mods",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge),
+                                  ConstrainedBox(
+                                      constraints:
+                                          const BoxConstraints(maxHeight: 150),
+                                      // child: Scrollbar(
+                                      //     scrollbarOrientation:
+                                      //         ScrollbarOrientation.left,
+                                      child: ListView.builder(
+                                          itemCount: _mods!.length,
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.vertical,
+                                          itemBuilder: (context, index) => Text(
+                                              "  ${_mods![index].trim()}")))
+                                ],
+                              )),
                         if (_errors != null)
                           // Scrollbar(
                           //     scrollbarOrientation: ScrollbarOrientation.top,
@@ -132,38 +149,44 @@ class _DesktopDropState extends State<DesktopDrop> {
                                     style:
                                         Theme.of(context).textTheme.titleLarge),
                                 Expanded(
+                                    // child: Scrollbar(
+                                    //     scrollbarOrientation:
+                                    //         ScrollbarOrientation.left,
                                     child: ListView.builder(
                                         itemCount: _errors!.length,
+                                        controller: scroller,
                                         itemBuilder:
                                             (BuildContext context, int index) {
-                                          return (isConsecutiveWithPreviousLine(
-                                                  index))
-                                              ? const Text("") // Spacer
-                                              : IntrinsicHeight(
+                                          return Container(
+                                              padding:
+                                                  (isConsecutiveWithPreviousLine(
+                                                          index))
+                                                      ? const EdgeInsets.only(
+                                                          top: 5)
+                                                      : const EdgeInsets.all(0),
+                                              child: IntrinsicHeight(
                                                   child: Row(children: [
-                                                  Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          " ${_errors![index].lineNumber} ",
-                                                          style: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .hintColor,
-                                                              fontFamily:
-                                                                  'RobotoMono'),
-                                                        )
-                                                      ]),
-                                                  Expanded(
-                                                      child: Text(
-                                                    _errors![index].error,
-                                                    style: const TextStyle(
-                                                        fontFamily:
-                                                            'RobotoMono'),
-                                                  ))
-                                                ]));
+                                                Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        " ${_errors![index].lineNumber} ",
+                                                        style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .hintColor,
+                                                            fontFamily:
+                                                                'RobotoMono'),
+                                                      )
+                                                    ]),
+                                                Expanded(
+                                                    child: Text(
+                                                  _errors![index].error,
+                                                  style: const TextStyle(
+                                                      fontFamily: 'RobotoMono'),
+                                                ))
+                                              ])));
                                         }))
                               ])),
                       ])));
