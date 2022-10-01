@@ -1,24 +1,36 @@
 import 'package:chipper/logparser.dart';
 import 'package:collection/collection.dart';
-import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 
+import 'AppState.dart';
+
 class DesktopDrop extends StatefulWidget {
-  const DesktopDrop({Key? key}) : super(key: key);
+  const DesktopDrop({super.key, this.chips});
+
+  final LogChips? chips;
 
   @override
   State<DesktopDrop> createState() => _DesktopDropState();
 }
 
 class _DesktopDropState extends State<DesktopDrop> {
-  final List<XFile> _list = [];
-  String? _message;
-  String? _errors;
+  String? _javaVersion;
+  String? _mods;
+  List<LogLine>? _errors;
   bool _dragging = false;
   Offset? offset;
-  final ScrollController _horizontal = ScrollController(),
-      _vertical = ScrollController();
+
+  @override
+  void didUpdateWidget(DesktopDrop oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final logChips = widget.chips;
+    if (logChips != null) {
+      _javaVersion = "${logChips.javaVersion}";
+      _mods = logChips.modList.map((e) => "  $e\n").join();
+      _errors = logChips.errorBlock;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,23 +48,13 @@ class _DesktopDropState extends State<DesktopDrop> {
               .firstWhereOrNull((element) => element.name == "starsector.log");
 
           final wrongLogRegex = RegExp(".*\.log\./d", caseSensitive: false);
+          if (logFile != null) LogParser().parse(logFile);
 
-          final logChips =
-              logFile != null ? await LogParser().parse(logFile) : null;
           setState(() {
-            _list.addAll(detail.files);
-
-            if (logChips != null) {
-              _message = "${logChips.javaVersion}"
-                  "\n\nMods:\n${logChips.modList?.map((e) => "  $e\n").join()}";
-              _errors =
-                  "\n\nErrors:\n${logChips.errorBlock?.map((e) => "  $e\n").join()}";
-            }
-
             if (logFile == null &&
                 detail.files
                     .any((element) => wrongLogRegex.hasMatch(element.name))) {
-              _message = "Log file should not end in a number.";
+              _mods = "Log file should not end in a number.";
             }
           });
         },
@@ -73,59 +75,102 @@ class _DesktopDropState extends State<DesktopDrop> {
             offset = null;
           });
         },
-        child: Scrollbar(
-            controller: _vertical,
-            thumbVisibility: true,
-            trackVisibility: true,
-            child: Scrollbar(
-                controller: _horizontal,
-                thumbVisibility: true,
-                trackVisibility: true,
-                notificationPredicate: (notif) => notif.depth == 1,
-                child: SingleChildScrollView(
-                    controller: _vertical,
-                    child: SingleChildScrollView(
-                        controller: _horizontal,
-                        scrollDirection: Axis.horizontal,
-                        child: Container(
-                            color: _dragging
-                                ? Colors.blue.withOpacity(0.4)
-                                : Colors.black26,
-                            padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-                            constraints: const BoxConstraints(
-                                minWidth: 200, minHeight: 200),
-                            child: Column(
-                              children: [
-                                if (_list.isEmpty)
-                                  Center(
-                                      widthFactor: 1.5,
-                                      child: Text(
-                                        "Drop starsector.log here",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline4,
-                                      )),
-                                // else
-                                //   Text(_list.map((e) => e.path).join("\n")),
-                                // if (offset != null)
-                                //   Align(
-                                //     alignment: Alignment.topRight,
-                                //     child: Text(
-                                //       '$offset',
-                                //       style: Theme.of(context).textTheme.caption,
-                                //     ),
-                                //   ),
-                                if (_message != null)
-                                  Text(
-                                    _message!,
-                                    softWrap: false,
-                                  ),
-                                if (_errors != null)
-                                  Text(
-                                    _errors!,
-                                    softWrap: false,
-                                  )
-                              ],
-                            )))))));
+        child: Container(
+            color:
+                _dragging ? Colors.blue.withOpacity(0.4) : Colors.transparent,
+            padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
+            child: (widget.chips == null)
+                ? Container(
+                    constraints: const BoxConstraints(
+                        minWidth: double.infinity, minHeight: double.infinity),
+                    child: Center(
+                        widthFactor: 1.5,
+                        child: Text(
+                          "Drop starsector.log here",
+                          style: Theme.of(context).textTheme.headline4,
+                        )))
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                        if (_javaVersion != null)
+                          Container(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(_javaVersion!,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleLarge),
+                                ],
+                              )),
+                        if (_mods != null)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Mods",
+                                  style:
+                                      Theme.of(context).textTheme.titleLarge),
+                              Text(
+                                _mods!,
+                                softWrap: false,
+                              )
+                            ],
+                          ),
+                        if (_errors != null)
+                          // Scrollbar(
+                          //     scrollbarOrientation: ScrollbarOrientation.top,
+                          //     child: SingleChildScrollView(
+                          //         primary: true,
+                          //         scrollDirection: Axis.horizontal,
+                          //         child:
+                          Expanded(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                Text("Errors",
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge),
+                                Expanded(
+                                    child: ListView.builder(
+                                        itemCount: _errors!.length,
+                                        itemBuilder:
+                                            (BuildContext context, int index) {
+                                          return (isConsecutiveWithPreviousLine(
+                                                  index))
+                                              ? const Text("") // Spacer
+                                              : IntrinsicHeight(
+                                                  child: Row(children: [
+                                                  Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          " ${_errors![index].lineNumber} ",
+                                                          style: TextStyle(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .hintColor,
+                                                              fontFamily:
+                                                                  'RobotoMono'),
+                                                        )
+                                                      ]),
+                                                  Expanded(
+                                                      child: Text(
+                                                    _errors![index].error,
+                                                    style: const TextStyle(
+                                                        fontFamily:
+                                                            'RobotoMono'),
+                                                  ))
+                                                ]));
+                                        }))
+                              ])),
+                      ])));
+  }
+
+  bool isConsecutiveWithPreviousLine(int index) {
+    if (index == 0) return false;
+    return _errors![index].lineNumber - 1 != _errors![index - 1].lineNumber;
   }
 }

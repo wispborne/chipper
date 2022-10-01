@@ -4,8 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   desktop_drop
-  drag_and_drop_windows
-  super_native_extensions
+  window_size
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

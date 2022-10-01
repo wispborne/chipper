@@ -1,35 +1,40 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:cross_file/cross_file.dart';
 
+import 'AppState.dart';
+
 class LogParser {
-  final modBlockOpenRegex = RegExp("Running with the following mods");
-  final modBlockEndRegex = RegExp("Mod list finished");
+  final modBlockOpenRegex = "Running with the following mods";
+  final modBlockEndPattern = "Mod list finished";
   final javaVersionRegex = RegExp(".*(Java version:.*)");
   final modListItemRegex = RegExp(".*-     (.*) \\(from .*");
-  final errorBlockOpenRegex = RegExp(".*ERROR.*");
-  final errorBlockCloseRegex = RegExp(".*Thread-.*");
+  final errorBlockOpenPattern = "ERROR";
+  final errorBlockClosePattern = "Thread-";
 
   final modList = List<String>.empty(growable: true);
-  final errorBlock = List<String>.empty(growable: true);
+  final errorBlock = List<LogLine>.empty(growable: true);
 
-  Future<LogChips?> parse(XFile file) async {
-    List<String> text;
+  void parse(XFile file) async {
+    String? javaVersion;
     bool isReadingModList = false;
     bool isReadingError = false;
-    var chips = LogChips();
 
     try {
+      var index = 0;
+      final stopwatch = Stopwatch()..start();
       await file
           .openRead()
           .map((event) => utf8.decode(event, allowMalformed: true))
           .transform(const LineSplitter())
           .forEach((line) {
-        if (javaVersionRegex.hasMatch(line)) {
-          chips.javaVersion = javaVersionRegex.firstMatch(line)?.group(1);
+        if (javaVersion == null && javaVersionRegex.hasMatch(line)) {
+          javaVersion = javaVersionRegex.firstMatch(line)?.group(1) ??
+              "(no java version in log)";
         }
 
-        if (modBlockEndRegex.hasMatch(line)) {
+        if (line.contains(modBlockEndPattern)) {
           isReadingModList = false;
         }
 
@@ -37,39 +42,36 @@ class LogParser {
           modList.add(modListItemRegex.firstMatch(line)?.group(1) ?? line);
         }
 
-        if (modBlockOpenRegex.hasMatch(line)) {
+        if (line.contains(modBlockOpenRegex)) {
           isReadingModList = true;
           modList
               .clear(); // If we found the start of a modlist block, wipe any previous, older one.
         }
 
-        if (errorBlockCloseRegex.hasMatch(line)) {
+        if (line.contains(errorBlockClosePattern)) {
           isReadingError = false;
         }
 
-        if (errorBlockOpenRegex.hasMatch(line)) {
+        if (line.contains(errorBlockOpenPattern)) {
           isReadingError = true;
         }
 
         if (isReadingError) {
-          errorBlock.add(line);
+          errorBlock.add(LogLine(index, line));
         }
+
+        index++;
       });
 
-      chips.modList = modList;
-      chips.errorBlock = errorBlock;
-      print(chips);
-      return chips;
+      var chips = LogChips(javaVersion, UnmodifiableListView(modList),
+          UnmodifiableListView(errorBlock));
+      AppState.loadedLog.chips = chips;
+      print("Parsing took ${stopwatch.elapsedMilliseconds} ms");
+      // return chips;
     } catch (e, stacktrace) {
       print(e);
       print(stacktrace);
       return null;
     }
   }
-}
-
-class LogChips {
-  List<String>? modList;
-  String? javaVersion;
-  List<String>? errorBlock;
 }
