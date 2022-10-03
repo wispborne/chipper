@@ -58,7 +58,7 @@ class GeneralErrorLogLineWidget extends StatelessWidget {
         text: TextSpan(
             text: "",
             style:
-                TextStyle(fontFamily: 'RobotoMono', color: Theme.of(context).colorScheme.onBackground.withAlpha(240)),
+                TextStyle(fontFamily: 'RobotoMono', color: Theme.of(context).colorScheme.onSurface.withAlpha(240)),
             children: [
           TextSpan(text: line.time, style: TextStyle(color: Theme.of(context).disabledColor)),
           TextSpan(text: line.thread?.prepend(" "), style: TextStyle(color: Theme.of(context).hintColor)),
@@ -68,7 +68,7 @@ class GeneralErrorLogLineWidget extends StatelessWidget {
               style: TextStyle(color: Theme.of(context).colorScheme.tertiary.withAlpha(200))),
           TextSpan(
               text: line.error?.prepend(" "),
-              style: TextStyle(color: Theme.of(context).colorScheme.onBackground.withAlpha(240))),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withAlpha(240))),
         ]));
   }
 }
@@ -122,17 +122,17 @@ class StacktraceLogLineWidget extends StatelessWidget {
         text: TextSpan(
             text: "",
             style:
-                TextStyle(fontFamily: 'RobotoMono', color: isObf? obfColor : theme.colorScheme.onBackground.withAlpha(240)),
+                TextStyle(fontFamily: 'RobotoMono', color: isObf? obfColor : theme.colorScheme.onSurface.withAlpha(240)),
             children: [
           TextSpan(text: logLine.at, style: TextStyle(color: theme.hintColor)),
-          TextSpan(text: logLine.namespace?.prepend(" "), style: TextStyle(color: isObf? obfColor : theme.colorScheme.onBackground.withAlpha(240))),
+          TextSpan(text: logLine.namespace?.prepend(" "), style: TextStyle(color: isObf? obfColor : theme.colorScheme.onSurface.withAlpha(240))),
           TextSpan(text: logLine.method?.prepend(" "), style: TextStyle(color: isObf? obfColor : theme.disabledColor)),
           TextSpan(
               text: logLine.namespace?.prepend(" "),
               style: TextStyle(color: isObf? obfColor : theme.colorScheme.tertiary.withAlpha(200))),
           TextSpan(
               text: logLine.classAndLine?.prepend(" (").append(")"),
-              style: TextStyle(color: isObf? obfColor : theme.colorScheme.onBackground.withAlpha(240))),
+              style: TextStyle(color: isObf? obfColor : theme.colorScheme.onSurface.withAlpha(240))),
         ]));
   }
 }
@@ -172,7 +172,7 @@ class UnknownLogLineWidget extends StatelessWidget {
               //     style: TextStyle(color: isObf? obfColor : Theme.of(context).colorScheme.tertiary.withAlpha(200))),
               // TextSpan(
               //     text: line.classAndLine?.prepend(" (").append(")"),
-              //     style: TextStyle(color: isObf? obfColor : Theme.of(context).colorScheme.onBackground.withAlpha(240))),
+              //     style: TextStyle(color: isObf? obfColor : Theme.of(context).colorScheme.onSurface.withAlpha(240))),
             ]
         ));
   }

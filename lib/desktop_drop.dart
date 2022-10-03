@@ -143,10 +143,13 @@ class _DesktopDropState extends State<DesktopDrop> {
                                 controller: _scroller,
                                 itemBuilder: (BuildContext context, int index) {
                                   return Column(children: [
-                                    if (isConsecutiveWithPreviousLine(index)) Divider(color: theme.disabledColor,),
+                                    if (isConsecutiveWithPreviousLine(index))
+                                      Divider(
+                                        color: theme.disabledColor,
+                                      ),
                                     Container(
                                         padding: (isConsecutiveWithPreviousLine(index))
-                                            ? const EdgeInsets.only(top: 0)
+                                            ? const EdgeInsets.only()
                                             : const EdgeInsets.only(top: 1, bottom: 1),
                                         child: IntrinsicHeight(
                                             child: Row(children: [
@@ -154,8 +157,7 @@ class _DesktopDropState extends State<DesktopDrop> {
                                             Text(
                                               " ${_errors![index].lineNumber}  ",
                                               style: TextStyle(
-                                                  color: theme.hintColor.withAlpha(40),
-                                                  fontFamily: 'RobotoMono'),
+                                                  color: theme.hintColor.withAlpha(40), fontFamily: 'RobotoMono'),
                                             )
                                           ]),
                                           Expanded(child: _errors![index].createLogWidget(context))

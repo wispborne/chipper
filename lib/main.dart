@@ -109,7 +109,8 @@ class _MyHomePageState extends State<MyHomePage> {
       //       ],
       //     )
       // ]))),
-      body: Stack(children: [
+      body: SelectionArea(
+          child: Stack(children: [
         Center(
             // Center is a layout widget. It takes a single child and positions it
             // in the middle of the parent.
@@ -144,17 +145,13 @@ class _MyHomePageState extends State<MyHomePage> {
             alignment: Alignment.topRight,
             child: IconButton(
                 onPressed: () => AppState.theme.switchThemes(),
-                icon: Icon(AppState.theme.currentTheme() == ThemeMode.dark
-                    ? Icons.sunny
-                    : Icons.mode_night))),
-      ]),
+                icon: Icon(AppState.theme.currentTheme() == ThemeMode.dark ? Icons.sunny : Icons.mode_night))),
+      ])),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (chips != null) {
-            Clipboard.setData(ClipboardData(
-                text: chips?.errorBlock
-                    .map((e) => "${e.lineNumber}: ${e.fullError}")
-                    .join('\n')));
+            Clipboard.setData(
+                ClipboardData(text: chips?.errorBlock.map((e) => "${e.lineNumber}: ${e.fullError}").join('\n')));
           }
         },
         tooltip: 'Copy',
