@@ -17,7 +17,7 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  static const title = "Chipper v1.1.0";
+  static const title = "Chipper v1.1.1";
   static const subtitle = "  by Wisp";
 
   @override
@@ -149,16 +149,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () => AppState.theme.switchThemes(),
                     icon: Icon(AppState.theme.currentTheme() == ThemeMode.dark ? Icons.sunny : Icons.mode_night))),
           ])),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (chips != null) {
-            Clipboard.setData(
-                ClipboardData(text: chips?.errorBlock.map((e) => "${e.lineNumber}: ${e.fullError}").join('\n')));
-          }
-        },
-        tooltip: 'Copy',
-        child: const Icon(Icons.copy),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: Padding(
+          padding: const EdgeInsets.only(right: 20),
+          child: FloatingActionButton(
+            onPressed: () {
+              if (chips != null) {
+                Clipboard.setData(
+                    ClipboardData(text: chips?.errorBlock.map((e) => "${e.lineNumber}: ${e.fullError}").join('\n')));
+              }
+            },
+            tooltip: 'Copy',
+            child: const Icon(Icons.copy),
+          )), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

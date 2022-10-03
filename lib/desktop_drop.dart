@@ -22,7 +22,14 @@ class _DesktopDropState extends State<DesktopDrop> {
   bool _dragging = false;
   Offset? offset;
   String msg = "Drop starsector.log here";
-  ScrollController _scroller = ScrollController();
+  // final ScrollController _scroller = ScrollController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+  }
 
   @override
   void didUpdateWidget(DesktopDrop oldWidget) {
@@ -31,13 +38,13 @@ class _DesktopDropState extends State<DesktopDrop> {
     if (logChips != null) {
       _javaVersion = "${logChips.javaVersion}";
       _mods = logChips.modList;
-      _errors = logChips.errorBlock;
+      _errors = logChips.errorBlock.reversed.toList(growable: false);
     }
 
     // Start at bottom, where errors live.
-    if (_scroller.hasClients) {
-      _scroller.jumpTo(_scroller.position.maxScrollExtent);
-    }
+    // if (_scroller.hasClients) {
+    //   _scroller.jumpTo(_scroller.position.maxScrollExtent);
+    // }
   }
 
   @override
@@ -140,7 +147,8 @@ class _DesktopDropState extends State<DesktopDrop> {
                             //         ScrollbarOrientation.left,
                             child: ListView.builder(
                                 itemCount: _errors!.length,
-                                controller: _scroller,
+                                // controller: _scroller,
+                                reverse: true,
                                 itemBuilder: (BuildContext context, int index) {
                                   return Column(children: [
                                     if (isConsecutiveWithPreviousLine(index))
@@ -169,7 +177,7 @@ class _DesktopDropState extends State<DesktopDrop> {
   }
 
   bool isConsecutiveWithPreviousLine(int index) {
-    if (index == 0) return false;
-    return _errors![index].lineNumber - 1 != _errors![index - 1].lineNumber;
+    if (index == _errors!.length - 1) return false;
+    return _errors![index].lineNumber - 1 != _errors![index + 1].lineNumber;
   }
 }

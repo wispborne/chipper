@@ -74,7 +74,7 @@ class GeneralErrorLogLineWidget extends StatelessWidget {
 }
 
 class StacktraceLogLine extends LogLine {
-  static final RegExp _stacktraceRegex = RegExp("(?<at>at) (?<namespace>.*)\\.(?<method>.*?\\()(?<classAndLine>.*)\\)");
+  static final RegExp _stacktraceRegex = RegExp("(?<at>at) (?<namespace>.*)\\.(?<method>.*?)\\((?<classAndLine>.*)\\)");
 
   String? at;
   String? namespace;
@@ -116,23 +116,21 @@ class StacktraceLogLineWidget extends StatelessWidget {
     var theme = Theme.of(context);
     final obfColor = theme.disabledColor;
     final isObf = logLine.classAndLine == "Unknown Source"; // Hardcoding, baby
+    var importantColor = theme.colorScheme.tertiary;
 
     return Text.rich(
         softWrap: logLine.shouldWrap,
         style:
-            TextStyle(fontFamily: 'RobotoMono', color: isObf ? obfColor : theme.colorScheme.onSurface.withAlpha(240)),
+            TextStyle(fontFamily: 'RobotoMono', color: isObf ? obfColor : importantColor.withAlpha(240)),
         TextSpan(children: [
           TextSpan(text: logLine.at, style: TextStyle(color: theme.hintColor)),
           TextSpan(
               text: logLine.namespace?.prepend(" "),
-              style: TextStyle(color: isObf ? obfColor : theme.colorScheme.onSurface.withAlpha(240))),
-          TextSpan(text: logLine.method?.prepend(" "), style: TextStyle(color: isObf ? obfColor : theme.disabledColor)),
+              style: TextStyle(color: isObf ? obfColor : importantColor.withAlpha(180))),
+          TextSpan(text: logLine.method?.prepend("."), style: TextStyle(color: isObf ? obfColor : importantColor.withAlpha(240))),
           TextSpan(
-              text: logLine.namespace?.prepend(" "),
-              style: TextStyle(color: isObf ? obfColor : theme.colorScheme.tertiary.withAlpha(200))),
-          TextSpan(
-              text: logLine.classAndLine?.prepend(" (").append(")"),
-              style: TextStyle(color: isObf ? obfColor : theme.colorScheme.onSurface.withAlpha(240))),
+              text: logLine.classAndLine?.prepend("(").append(")"),
+              style: TextStyle(color: isObf ? obfColor : importantColor.withAlpha(240))),
         ]));
   }
 }
