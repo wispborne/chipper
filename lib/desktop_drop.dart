@@ -1,3 +1,4 @@
+import 'package:chipper/ModEntry.dart';
 import 'package:chipper/logparser.dart';
 import 'package:collection/collection.dart';
 import 'package:desktop_drop/desktop_drop.dart';
@@ -17,18 +18,18 @@ class DesktopDrop extends StatefulWidget {
 
 class _DesktopDropState extends State<DesktopDrop> {
   String? _javaVersion;
-  UnmodifiableListView<String>? _mods;
+  UnmodifiableListView<ModEntry>? _mods;
   List<LogLine>? _errors;
   bool _dragging = false;
   Offset? offset;
   String msg = "Drop starsector.log here";
+
   // final ScrollController _scroller = ScrollController();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
   }
 
   @override
@@ -128,7 +129,7 @@ class _DesktopDropState extends State<DesktopDrop> {
                                       itemCount: _mods!.length,
                                       shrinkWrap: true,
                                       scrollDirection: Axis.vertical,
-                                      itemBuilder: (context, index) => Text("  ${_mods![index].trim()}")))
+                                      itemBuilder: (context, index) => _mods![index].createWidget(context)))
                             ],
                           )),
                     if (_errors != null)

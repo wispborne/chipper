@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:chipper/ModEntry.dart';
 import 'package:cross_file/cross_file.dart';
 
 import 'AppState.dart';
@@ -10,11 +11,10 @@ class LogParser {
   final modBlockOpenRegex = "Running with the following mods";
   final modBlockEndPattern = "Mod list finished";
   final javaVersionRegex = RegExp(".*(Java version:.*)");
-  final modListItemRegex = RegExp(".*-     (.*) \\(from .*");
   final errorBlockOpenPattern = "ERROR";
   final errorBlockClosePatterns = ["[Thread-", "[main]"];
 
-  final modList = List<String>.empty(growable: true);
+  final modList = List<ModEntry>.empty(growable: true);
   final errorBlock = List<LogLine>.empty(growable: true);
 
   void parse(XFile file) async {
@@ -31,7 +31,7 @@ class LogParser {
           .transform(const LineSplitter())
           .forEach((line) {
         if (javaVersion == null && javaVersionRegex.hasMatch(line)) {
-          javaVersion = javaVersionRegex.firstMatch(line)?.group(1) ?? "(no java version in log)";
+          javaVersion = javaVersionRegex.firstMatch(line)?.group(1);
         }
 
         if (line.contains(modBlockEndPattern)) {
@@ -39,7 +39,7 @@ class LogParser {
         }
 
         if (isReadingModList) {
-          modList.add(modListItemRegex.firstMatch(line)?.group(1) ?? line);
+          modList.add(ModEntry.tryCreate(line));
         }
         if (line.contains(modBlockOpenRegex)) {
           isReadingModList = true;
@@ -70,6 +70,8 @@ class LogParser {
 
         index++;
       });
+
+      javaVersion ??= "(no java version in log)";
 
       var chips = LogChips(javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock));
       AppState.loadedLog.chips = chips;

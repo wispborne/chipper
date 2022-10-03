@@ -17,7 +17,7 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  static const title = "Chipper v1.1.1";
+  static const title = "Chipper v1.2.0";
   static const subtitle = "  by Wisp";
 
   @override

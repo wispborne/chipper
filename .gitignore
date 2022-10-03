@@ -210,3 +210,5 @@ fabric.properties
 chipper.config/chippertheme.lock
 
 *.hive
+
+*.lock

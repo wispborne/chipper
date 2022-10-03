@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:chipper/ModEntry.dart';
 import 'package:chipper/MyTheme.dart';
 import 'package:chipper/extensions.dart';
 import 'package:flutter/foundation.dart';
@@ -25,7 +26,7 @@ class LoadedLog extends ChangeNotifier {
 
 class LogChips {
   final String? javaVersion;
-  UnmodifiableListView<String> modList = UnmodifiableListView([]);
+  UnmodifiableListView<ModEntry> modList = UnmodifiableListView([]);
   UnmodifiableListView<LogLine> errorBlock = UnmodifiableListView([]);
 
   LogChips(this.javaVersion, this.modList, this.errorBlock);
