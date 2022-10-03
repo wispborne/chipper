@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:cross_file/cross_file.dart';
 
 import 'AppState.dart';
+import 'ErrorLines.dart';
 
 class LogParser {
   final modBlockOpenRegex = "Running with the following mods";
@@ -11,7 +12,7 @@ class LogParser {
   final javaVersionRegex = RegExp(".*(Java version:.*)");
   final modListItemRegex = RegExp(".*-     (.*) \\(from .*");
   final errorBlockOpenPattern = "ERROR";
-  final errorBlockClosePatterns =[ "[Thread-", "[main]"];
+  final errorBlockClosePatterns = ["[Thread-", "[main]"];
 
   final modList = List<String>.empty(growable: true);
   final errorBlock = List<LogLine>.empty(growable: true);
@@ -54,7 +55,17 @@ class LogParser {
         }
 
         if (isReadingError) {
-          errorBlock.add(LogLine(index + 1, line));
+          final err = (StacktraceLogLine.tryCreate(index + 1, line));
+          if (err != null) {
+            errorBlock.add(err);
+          } else {
+            var err = GeneralErrorLogLine.tryCreate(index + 1, line);
+            if (err != null) {
+              errorBlock.add(err);
+            } else {
+              errorBlock.add(UnknownLogLine(index + 1, line));
+            }
+          }
         }
 
         index++;

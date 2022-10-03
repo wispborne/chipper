@@ -1,10 +1,10 @@
-import 'package:chipper/extensions.dart';
 import 'package:chipper/logparser.dart';
 import 'package:collection/collection.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 
 import 'AppState.dart';
+import 'ErrorLines.dart';
 
 class DesktopDrop extends StatefulWidget {
   const DesktopDrop({super.key, this.chips});
@@ -42,6 +42,7 @@ class _DesktopDropState extends State<DesktopDrop> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return DropTarget(
         onDragDone: (detail) async {
           debugPrint('onDragDone:');
@@ -84,7 +85,7 @@ class _DesktopDropState extends State<DesktopDrop> {
         },
         child: Container(
             color: _dragging ? Colors.blue.withOpacity(0.4) : Colors.transparent,
-            padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
+            padding: const EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 20),
             child: (widget.chips == null)
                 ? Container(
                     constraints: const BoxConstraints(minWidth: double.infinity, minHeight: double.infinity),
@@ -92,7 +93,7 @@ class _DesktopDropState extends State<DesktopDrop> {
                         widthFactor: 1.5,
                         child: Text(
                           msg,
-                          style: Theme.of(context).textTheme.headline4,
+                          style: theme.textTheme.headline4,
                         )))
                 : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     if (_javaVersion != null)
@@ -101,7 +102,7 @@ class _DesktopDropState extends State<DesktopDrop> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(_javaVersion!, style: Theme.of(context).textTheme.titleLarge),
+                              Text(_javaVersion!, style: theme.textTheme.titleLarge),
                             ],
                           )),
                     if (_mods != null)
@@ -110,7 +111,7 @@ class _DesktopDropState extends State<DesktopDrop> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Mods", style: Theme.of(context).textTheme.titleLarge),
+                              Text("Mods", style: theme.textTheme.titleLarge),
                               ConstrainedBox(
                                   constraints: const BoxConstraints(maxHeight: 150),
                                   // child: Scrollbar(
@@ -132,7 +133,7 @@ class _DesktopDropState extends State<DesktopDrop> {
                       //         child:
                       Expanded(
                           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text("Errors", style: Theme.of(context).textTheme.titleLarge),
+                        Text("Errors", style: theme.textTheme.titleLarge),
                         Expanded(
                             // child: Scrollbar(
                             //     scrollbarOrientation:
@@ -141,52 +142,25 @@ class _DesktopDropState extends State<DesktopDrop> {
                                 itemCount: _errors!.length,
                                 controller: _scroller,
                                 itemBuilder: (BuildContext context, int index) {
-                                  return Container(
-                                      padding: (isConsecutiveWithPreviousLine(index))
-                                          ? const EdgeInsets.only(top: 10)
-                                          : const EdgeInsets.all(0),
-                                      child: IntrinsicHeight(
-                                          child: Row(children: [
-                                        Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-                                          Text(
-                                            " ${_errors![index].lineNumber} ",
-                                            style:
-                                                TextStyle(color: Theme.of(context).hintColor, fontFamily: 'RobotoMono'),
-                                          )
-                                        ]),
-                                        Expanded(
-                                            child: RichText(
-                                                text: TextSpan(
-                                                    text: "",
-                                                    style: TextStyle(
-                                                        fontFamily: 'RobotoMono',
-                                                        color:
-                                                            Theme.of(context).colorScheme.onBackground.withAlpha(240)),
-                                                    children: [
-                                              if (_errors![index].time == null)
-                                                TextSpan(
-                                                  text: _errors![index].fullError,
-                                                ),
-                                              TextSpan(
-                                                  text: _errors![index].time,
-                                                  style: TextStyle(color: Theme.of(context).disabledColor)),
-                                              TextSpan(
-                                                  text: _errors![index].thread?.prepend(" "),
-                                                  style: TextStyle(color: Theme.of(context).hintColor)),
-                                              TextSpan(
-                                                  text: _errors![index].logLevel?.prepend(" "),
-                                                  style: TextStyle(color: Theme.of(context).disabledColor)),
-                                              TextSpan(
-                                                  text: _errors![index].namespace?.prepend(" "),
-                                                  style: TextStyle(
-                                                      color: Theme.of(context).colorScheme.tertiary.withAlpha(200))),
-                                              TextSpan(
-                                                  text: _errors![index].error?.prepend(" "),
-                                                  style: TextStyle(
-                                                      color:
-                                                          Theme.of(context).colorScheme.onBackground.withAlpha(240))),
-                                            ])))
-                                      ])));
+                                  return Column(children: [
+                                    if (isConsecutiveWithPreviousLine(index)) Divider(color: theme.disabledColor,),
+                                    Container(
+                                        padding: (isConsecutiveWithPreviousLine(index))
+                                            ? const EdgeInsets.only(top: 0)
+                                            : const EdgeInsets.only(top: 1, bottom: 1),
+                                        child: IntrinsicHeight(
+                                            child: Row(children: [
+                                          Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                                            Text(
+                                              " ${_errors![index].lineNumber}  ",
+                                              style: TextStyle(
+                                                  color: theme.hintColor.withAlpha(40),
+                                                  fontFamily: 'RobotoMono'),
+                                            )
+                                          ]),
+                                          Expanded(child: _errors![index].createLogWidget(context))
+                                        ])))
+                                  ]);
                                 }))
                       ])),
                   ])));
