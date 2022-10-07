@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:chipper/ModEntry.dart';
 import 'package:chipper/logparser.dart';
 import 'package:collection/collection.dart';
@@ -61,7 +63,7 @@ class _DesktopDropState extends State<DesktopDrop> {
                 '  ${file.mimeType}');
           }
 
-          final logFile = detail.files.first;
+          final logFile = detail.files.firstOrNull;
           // No need to filter by name for now, in case file has (Copy) or (1) in it.
           // .firstWhereOrNull((element) => element.name == "starsector.log");
 
@@ -166,7 +168,7 @@ class _DesktopDropState extends State<DesktopDrop> {
                                             Text(
                                               " ${_errors![index].lineNumber}  ",
                                               style: TextStyle(
-                                                  color: theme.hintColor.withAlpha(40), fontFamily: 'RobotoMono'),
+                                                  color: theme.hintColor.withAlpha(40), fontFeatures: const [ FontFeature.tabularFigures() ]),
                                             )
                                           ]),
                                           Expanded(child: _errors![index].createLogWidget(context))
