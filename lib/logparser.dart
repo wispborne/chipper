@@ -8,9 +8,11 @@ import 'AppState.dart';
 import 'ErrorLines.dart';
 
 class LogParser {
+  final gameVersionRegex = RegExp(" - Starting Starsector (.*?) launcher");
+  final osRegex = RegExp("  - OS: *(.*)");
   final modBlockOpenRegex = "Running with the following mods";
   final modBlockEndPattern = "Mod list finished";
-  final javaVersionRegex = RegExp(".*(Java version:.*)");
+  final javaVersionRegex = RegExp(".*Java version: *(.*)");
   final errorBlockOpenPattern = "ERROR";
   final errorBlockClosePatterns = ["[Thread-", "[main]"];
 
@@ -18,6 +20,8 @@ class LogParser {
   final errorBlock = List<LogLine>.empty(growable: true);
 
   void parse(String stream) async {
+    String? gameVersion;
+    String? os;
     String? javaVersion;
     bool isReadingModList = false;
     bool isReadingError = false;
@@ -26,9 +30,17 @@ class LogParser {
       var index = 0;
       final stopwatch = Stopwatch()..start();
       final splitter = const LineSplitter();
-      splitter.convert(stream)
+      splitter
+          .convert(stream)
           // .transform(splitter)
           .forEach((line) {
+        if (gameVersion == null && gameVersionRegex.hasMatch(line)) {
+          gameVersion = gameVersionRegex.firstMatch(line)?.group(1);
+        }
+        if (os == null && osRegex.hasMatch(line)) {
+          os = osRegex.firstMatch(line)?.group(1);
+        }
+
         if (javaVersion == null && javaVersionRegex.hasMatch(line)) {
           javaVersion = javaVersionRegex.firstMatch(line)?.group(1);
         }
@@ -72,7 +84,7 @@ class LogParser {
 
       javaVersion ??= "(no java version in log)";
 
-      var chips = LogChips(javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock));
+      var chips = LogChips(gameVersion, os, javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock));
       AppState.loadedLog.chips = chips;
       print("Parsing took ${stopwatch.elapsedMilliseconds} ms");
       // return chips;

@@ -22,6 +22,8 @@ class DesktopDrop extends StatefulWidget {
 }
 
 class _DesktopDropState extends State<DesktopDrop> {
+  String? _gameVersion;
+  String? _os;
   String? _javaVersion;
   UnmodifiableListView<ModEntry>? _mods;
   List<LogLine>? _errors;
@@ -42,6 +44,8 @@ class _DesktopDropState extends State<DesktopDrop> {
     super.didUpdateWidget(oldWidget);
     final logChips = widget.chips;
     if (logChips != null) {
+      _gameVersion = "${logChips.gameVersion}";
+      _os = "${logChips.os}";
       _javaVersion = "${logChips.javaVersion}";
       _mods = logChips.modList;
       _errors = logChips.errorBlock.reversed.toList(growable: false);
@@ -142,13 +146,14 @@ class _DesktopDropState extends State<DesktopDrop> {
                           style: theme.textTheme.headline4,
                         )))
                 : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    if (_javaVersion != null)
+                    if (_gameVersion != null || _javaVersion != null)
                       Container(
                           padding: const EdgeInsets.only(bottom: 10),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(_javaVersion!, style: theme.textTheme.titleLarge),
+                              Text("System", style: theme.textTheme.titleLarge),
+                              Text("Starsector: ${_gameVersion!}\nOS: $_os\nJRE: $_javaVersion", style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240))),
                             ],
                           )),
                     if (_mods != null)
@@ -157,7 +162,7 @@ class _DesktopDropState extends State<DesktopDrop> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("Mods", style: theme.textTheme.titleLarge),
+                              Text("Mods (${_mods?.length})", style: theme.textTheme.titleLarge),
                               ConstrainedBox(
                                   constraints: const BoxConstraints(maxHeight: 150),
                                   // child: Scrollbar(

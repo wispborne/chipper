@@ -25,11 +25,13 @@ class LoadedLog extends ChangeNotifier {
 }
 
 class LogChips {
+  final String? gameVersion;
+  final String? os;
   final String? javaVersion;
   UnmodifiableListView<ModEntry> modList = UnmodifiableListView([]);
   UnmodifiableListView<LogLine> errorBlock = UnmodifiableListView([]);
 
-  LogChips(this.javaVersion, this.modList, this.errorBlock);
+  LogChips(this.gameVersion, this.os, this.javaVersion, this.modList, this.errorBlock);
 }
 
 // class LogChips extends ChangeNotifier {

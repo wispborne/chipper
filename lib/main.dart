@@ -22,7 +22,7 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  static const title = "Chipper v1.3.0";
+  static const title = "Chipper v1.4.0";
   static const subtitle = "  by Wisp";
 
   @override
@@ -159,8 +159,11 @@ class _MyHomePageState extends State<MyHomePage> {
           child: FloatingActionButton(
             onPressed: () {
               if (chips != null) {
-                Clipboard.setData(
-                    ClipboardData(text: chips?.errorBlock.map((e) => "${e.lineNumber}: ${e.fullError}").join('\n')));
+                Clipboard.setData(ClipboardData(
+                    text:
+                        "Game: ${chips?.gameVersion}\nOS: ${chips?.os}\nJava: ${chips?.javaVersion}"
+                            "\n\nMods (${chips?.modList.length})\n${chips?.modList.map((e) => "${e.modName}  v${e.modVersion}  [${e.modId}]").join('\n')}"
+                            "\n\nLine: Error message\n${chips?.errorBlock.map((e) => "${e.lineNumber}: ${e.fullError}").join('\n')}"));
               }
             },
             tooltip: 'Copy',
