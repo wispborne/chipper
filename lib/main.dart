@@ -1,13 +1,18 @@
 import 'package:chipper/AppState.dart';
 import 'package:chipper/desktop_drop.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
+import 'package:platform_info/platform_info.dart';
 import 'package:window_size/window_size.dart';
 
 import 'config.dart';
 
 void main() async {
+  Fimber.plantTree(DebugTree.elapsed(logLevels: ["V", "D", "I", "W", "E"], useColors: true));
+  Fimber.i("Logging started.");
+  Fimber.i("Platform: ${Platform.I.operatingSystem.name} ${Platform.I.version}.");
   Hive.init("chipper.config");
   box = await Hive.openBox("chipperTheme");
   runApp(const MyApp());

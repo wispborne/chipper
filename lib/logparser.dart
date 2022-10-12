@@ -17,7 +17,7 @@ class LogParser {
   final modList = List<ModEntry>.empty(growable: true);
   final errorBlock = List<LogLine>.empty(growable: true);
 
-  void parse(XFile file) async {
+  void parse(String stream) async {
     String? javaVersion;
     bool isReadingModList = false;
     bool isReadingError = false;
@@ -25,10 +25,9 @@ class LogParser {
     try {
       var index = 0;
       final stopwatch = Stopwatch()..start();
-      await file
-          .openRead()
-          .map((event) => utf8.decode(event, allowMalformed: true))
-          .transform(const LineSplitter())
+      final splitter = const LineSplitter();
+      splitter.convert(stream)
+          // .transform(splitter)
           .forEach((line) {
         if (javaVersion == null && javaVersionRegex.hasMatch(line)) {
           javaVersion = javaVersionRegex.firstMatch(line)?.group(1);

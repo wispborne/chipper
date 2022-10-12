@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:chipper/ModEntry.dart';
 import 'package:chipper/logparser.dart';
 import 'package:collection/collection.dart';
 import 'package:desktop_drop/desktop_drop.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import 'AppState.dart';
 import 'ErrorLines.dart';
@@ -55,26 +58,59 @@ class _DesktopDropState extends State<DesktopDrop> {
     final theme = Theme.of(context);
     return DropTarget(
         onDragDone: (detail) async {
-          debugPrint('onDragDone:');
+          Fimber.i('onDragDone:');
           for (final file in detail.files) {
-            debugPrint('  ${file.path} ${file.name}'
-                '  ${await file.lastModified()}'
-                '  ${await file.length()}'
-                '  ${file.mimeType}');
+            Fimber.i('  Path:${file.path}'
+                '\n  Name:${file.name}'
+                '\n  Modified:${await file.lastModified()}'
+                '\n  Length: ${await file.length()}'
+                '\n  Type: ${file.runtimeType}'
+                '\n  MIME:${file.mimeType}');
           }
 
-          final logFile = detail.files.firstOrNull;
+          final droppedFile = detail.files.firstOrNull;
+          if (droppedFile == null) return;
+
           // No need to filter by name for now, in case file has (Copy) or (1) in it.
           // .firstWhereOrNull((element) => element.name == "starsector.log");
+          String? logStream;
 
-          final wrongLogRegex = RegExp(".*\.log\./d", caseSensitive: false);
-          if (logFile != null) LogParser().parse(logFile);
-
-          setState(() {
-            if (logFile == null && detail.files.any((element) => wrongLogRegex.hasMatch(element.name))) {
-              msg = "Log file should not end in a number.";
+          // Check if file is a url or an actual file
+          if (droppedFile.name.endsWith(".url")) {
+            final url = RegExp(".*(http.*)").firstMatch(await droppedFile.readAsString())?.group(1);
+            if (url != null) {
+              final uri = Uri.parse(url);
+              try {
+                Fimber.i("Fetching and streaming online url $uri");
+                logStream = (await http.get(uri, headers: {
+                  'Content-Type': 'text/plain',
+                }))
+                    .body; //get()).bodyBytes;//.onError((error, stackTrace) => );
+              } catch (e) {
+                Fimber.w("Failed to read $url", ex: e);
+              }
             }
-          });
+          } else {
+            try {
+              logStream = utf8.decode((await droppedFile.readAsBytes()),
+                  allowMalformed: true); //.openRead().map((chunk) => utf8.decode(chunk, allowMalformed: true));
+            } catch (e) {
+              Fimber.w("Couldn't parse text file.", ex: e);
+            }
+          }
+
+          // final wrongLogRegex = RegExp(".*\.log\./d", caseSensitive: false);
+          if (logStream != null) {
+            LogParser().parse(logStream);
+          } else {
+            Fimber.i("Couldn't read ${droppedFile.name}");
+          }
+
+          // setState(() {
+          //   if (logFile == null && detail.files.any((element) => wrongLogRegex.hasMatch(element.name))) {
+          //     msg = "Log file should not end in a number.";
+          //   }
+          // });
         },
         onDragUpdated: (details) {
           setState(() {
@@ -168,7 +204,8 @@ class _DesktopDropState extends State<DesktopDrop> {
                                             Text(
                                               " ${_errors![index].lineNumber}  ",
                                               style: TextStyle(
-                                                  color: theme.hintColor.withAlpha(40), fontFeatures: const [ FontFeature.tabularFigures() ]),
+                                                  color: theme.hintColor.withAlpha(40),
+                                                  fontFeatures: const [FontFeature.tabularFigures()]),
                                             )
                                           ]),
                                           Expanded(child: _errors![index].createLogWidget(context))
