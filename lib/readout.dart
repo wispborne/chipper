@@ -30,6 +30,7 @@ class Readout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    const iconOpacity = 140;
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       if (_gameVersion != null || _javaVersion != null)
@@ -45,8 +46,8 @@ class Readout extends StatelessWidget {
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: createSystemCopyString(_chips)));
                     },
-                    icon: const Icon(Icons.copy),
-                    iconSize: 18,
+                    icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
+                    iconSize: 20,
                   )
                 ]),
                 Text("Starsector: ${_gameVersion!}\nOS: $_os\nJRE: $_javaVersion",
@@ -66,15 +67,18 @@ class Readout extends StatelessWidget {
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: createModsCopyString(_chips, minify: false)));
                     },
-                    icon: const Icon(Icons.copy),
-                    iconSize: 18,
+                    icon: Icon(
+                      Icons.copy,
+                      color: theme.iconTheme.color?.withAlpha(iconOpacity),
+                    ),
+                    iconSize: 20,
                   ),
                   IconButton(
                     tooltip: "Copy (less info)",
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: createModsCopyString(_chips, minify: true)));
                     },
-                    icon: const Icon(Icons.copy),
+                    icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
                     iconSize: 14,
                   ),
                   IconButton(
@@ -82,15 +86,12 @@ class Readout extends StatelessWidget {
                     onPressed: () {
                       _showMyDialog(context, body: _mods!.map((e) => e.createWidget(context)).toList());
                     },
-                    icon: const Icon(Icons.open_in_full),
-                    iconSize: 18,
+                    icon: Icon(Icons.open_in_full, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
+                    iconSize: 20,
                   ),
                 ]),
                 ConstrainedBox(
                     constraints: const BoxConstraints(maxHeight: 150),
-                    // child: Scrollbar(
-                    //     scrollbarOrientation:
-                    //         ScrollbarOrientation.left,
                     child: ListView.builder(
                         itemCount: _mods!.length,
                         shrinkWrap: true,
@@ -114,8 +115,8 @@ class Readout extends StatelessWidget {
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: createErrorsCopyString(_chips)));
               },
-              icon: const Icon(Icons.copy),
-              iconSize: 18,
+              icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
+              iconSize: 20,
             )
           ]),
           Expanded(
