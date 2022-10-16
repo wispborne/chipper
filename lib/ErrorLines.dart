@@ -5,9 +5,10 @@ abstract class LogLine {
   int lineNumber;
   String fullError;
   bool shouldWrap = false;
+  bool isPreviousThreadLine;
 
   @mustCallSuper
-  LogLine(this.lineNumber, this.fullError);
+  LogLine(this.lineNumber, this.fullError, {required this.isPreviousThreadLine});
 
   Widget createLogWidget(BuildContext context);
 }
@@ -22,13 +23,13 @@ class GeneralErrorLogLine extends LogLine {
   String? namespace;
   String? error;
 
-  GeneralErrorLogLine(super.lineNumber, super.fullError);
+  GeneralErrorLogLine(super.lineNumber, super.fullError, {required super.isPreviousThreadLine});
 
   static GeneralErrorLogLine? tryCreate(int lineNumber, String fullError) {
     final match = _logRegex.firstMatch(fullError);
 
     if (match != null) {
-      final log = GeneralErrorLogLine(lineNumber, fullError);
+      final log = GeneralErrorLogLine(lineNumber, fullError, isPreviousThreadLine: false);
       log.time = match.namedGroup("millis");
       log.thread = match.namedGroup("thread");
       log.logLevel = match.namedGroup("level");
@@ -60,9 +61,9 @@ class GeneralErrorLogLineWidget extends StatelessWidget {
         TextSpan(
             style: TextStyle(fontFamily: 'RobotoMono', color: theme.colorScheme.onSurface.withAlpha(240)),
             children: [
-              TextSpan(text: logLine.time, style: TextStyle(color: theme.disabledColor)),
-              TextSpan(text: logLine.thread?.prepend(" "), style: TextStyle(color: theme.hintColor)),
-              TextSpan(text: logLine.logLevel?.prepend(" "), style: TextStyle(color: theme.disabledColor)),
+              TextSpan(text: logLine.time, style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(200))),
+              TextSpan(text: logLine.thread?.prepend(" "), style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(140))),
+              TextSpan(text: logLine.logLevel?.prepend(" "), style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(200))),
               TextSpan(
                   text: logLine.namespace?.prepend(" "),
                   style: TextStyle(color: theme.colorScheme.tertiary.withAlpha(200))),
@@ -83,13 +84,13 @@ class StacktraceLogLine extends LogLine {
   /// No parentheses.
   String? classAndLine;
 
-  StacktraceLogLine(super.lineNumber, super.fullError);
+  StacktraceLogLine(super.lineNumber, super.fullError, {required super.isPreviousThreadLine});
 
   static StacktraceLogLine? tryCreate(int lineNumber, String fullError) {
     final match = _stacktraceRegex.firstMatch(fullError);
 
     if (match != null) {
-      final log = StacktraceLogLine(lineNumber, fullError);
+      final log = StacktraceLogLine(lineNumber, fullError, isPreviousThreadLine: false);
       log.at = match.namedGroup("at");
       log.namespace = match.namedGroup("namespace");
       log.method = match.namedGroup("method");
@@ -114,7 +115,7 @@ class StacktraceLogLineWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    final obfColor = theme.disabledColor;
+    final obfColor = theme.colorScheme.onSurface.withAlpha(200);
     final isObf = logLine.classAndLine == "Unknown Source"; // Hardcoding, baby
     var importantColor = theme.colorScheme.tertiary;
 
@@ -136,10 +137,10 @@ class StacktraceLogLineWidget extends StatelessWidget {
 }
 
 class UnknownLogLine extends LogLine {
-  UnknownLogLine(super.lineNumber, super.fullError);
+  UnknownLogLine(super.lineNumber, super.fullError, {required super.isPreviousThreadLine});
 
-  static UnknownLogLine? tryCreate(int lineNumber, String fullError) {
-    return UnknownLogLine(lineNumber, fullError);
+  static UnknownLogLine? tryCreate(int lineNumber, String fullError, bool isPreviousThreadLine) {
+    return UnknownLogLine(lineNumber, fullError, isPreviousThreadLine: isPreviousThreadLine);
   }
 
   @override
@@ -157,7 +158,7 @@ class UnknownLogLineWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text.rich(
         softWrap: logLine.shouldWrap,
-        style: TextStyle(fontFamily: 'RobotoMono', color: Theme.of(context).disabledColor),
+        style: TextStyle(fontFamily: 'RobotoMono', color: Theme.of(context).colorScheme.onSurface.withAlpha(180)),
         TextSpan(text: logLine.fullError, children: [
           // TextSpan(text: line.at, style: TextStyle(color: Theme.of(context).hintColor)),
           // TextSpan(text: line.namespace?.prepend(" "), style: TextStyle(color: isObf? obfColor : Theme.of(context).hintColor)),

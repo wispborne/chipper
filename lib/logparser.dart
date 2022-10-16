@@ -1,8 +1,7 @@
-import 'dart:collection';
 import 'dart:convert';
 
 import 'package:chipper/ModEntry.dart';
-import 'package:cross_file/cross_file.dart';
+import 'package:collection/collection.dart';
 
 import 'AppState.dart';
 import 'ErrorLines.dart';
@@ -14,7 +13,8 @@ class LogParser {
   final modBlockEndPattern = "Mod list finished";
   final javaVersionRegex = RegExp(".*Java version: *(.*)");
   final errorBlockOpenPattern = "ERROR";
-  final errorBlockClosePatterns = ["[Thread-", "[main]"];
+  final errorBlockClosePatterns = ["[Thread-", "[main]", " INFO "];
+  final threadPattern = RegExp("\\d+ \\[(.*?)\\] .+");
 
   final modList = List<ModEntry>.empty(growable: true);
   final errorBlock = List<LogLine>.empty(growable: true);
@@ -27,13 +27,13 @@ class LogParser {
     bool isReadingError = false;
 
     try {
-      var index = 0;
       final stopwatch = Stopwatch()..start();
-      final splitter = const LineSplitter();
-      splitter
-          .convert(stream)
+      const splitter = LineSplitter();
+      var logLines = splitter.convert(stream);
+
+      logLines
           // .transform(splitter)
-          .forEach((line) {
+          .forEachIndexed((index, line) {
         if (gameVersion == null && gameVersionRegex.hasMatch(line)) {
           gameVersion = gameVersionRegex.firstMatch(line)?.group(1);
         }
@@ -62,6 +62,20 @@ class LogParser {
         }
 
         if (line.contains(errorBlockOpenPattern)) {
+          // Travel back up and find the previous log entry on the same thread
+          // Only look max 10 lines up for perf.
+          final thread = threadPattern.firstMatch(line)?.group(1);
+
+          if (thread != null) {
+            for (var i = (index - 1); i >= 0 && i > (index - 10); i--) {
+              final isLineAlreadyAdded = errorBlock.none((err) => err.lineNumber == i);
+              if (isLineAlreadyAdded && threadPattern.firstMatch(logLines[i])?.group(1) == thread) {
+                errorBlock.add(UnknownLogLine(i + 1, logLines[i], isPreviousThreadLine: true));
+                break;
+              }
+            }
+          }
+
           isReadingError = true;
         }
 
@@ -74,17 +88,16 @@ class LogParser {
             if (err != null) {
               errorBlock.add(err);
             } else {
-              errorBlock.add(UnknownLogLine(index + 1, line));
+              errorBlock.add(UnknownLogLine(index + 1, line, isPreviousThreadLine: false));
             }
           }
         }
-
-        index++;
       });
 
       javaVersion ??= "(no java version in log)";
 
-      var chips = LogChips(gameVersion, os, javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock));
+      var chips =
+          LogChips(gameVersion, os, javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock));
       AppState.loadedLog.chips = chips;
       print("Parsing took ${stopwatch.elapsedMilliseconds} ms");
       // return chips;

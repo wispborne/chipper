@@ -22,7 +22,7 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  static const title = "Chipper v1.4.0";
+  static const title = "Chipper v1.5.0";
   static const subtitle = "  by Wisp";
 
   @override
@@ -40,11 +40,19 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final darkTheme = ThemeData.dark(useMaterial3: true);
+    final lightTheme = ThemeData.light(useMaterial3: true);
     return MaterialApp(
       title: 'Chipper',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      // .copyWith(
+      // snackBarTheme: SnackBarThemeData(
+      //     backgroundColor: darkTheme.colorScheme.surface,
+      //     actionTextColor: darkTheme.hintColor,
+      //     contentTextStyle: darkTheme.primaryTextTheme.bodyMedium,
+      //     disabledActionTextColor: darkTheme.disabledColor)),
       themeMode: AppState.theme.currentTheme(),
       home: const MyHomePage(title: MyApp.title, subTitle: MyApp.subtitle),
     );
@@ -160,10 +168,9 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               if (chips != null) {
                 Clipboard.setData(ClipboardData(
-                    text:
-                        "Game: ${chips?.gameVersion}\nOS: ${chips?.os}\nJava: ${chips?.javaVersion}"
-                            "\n\nMods (${chips?.modList.length})\n${chips?.modList.map((e) => "${e.modName}  v${e.modVersion}  [${e.modId}]").join('\n')}"
-                            "\n\nLine: Error message\n${chips?.errorBlock.map((e) => "${e.lineNumber}: ${e.fullError}").join('\n')}"));
+                    text: "Game: ${chips?.gameVersion}\nOS: ${chips?.os}\nJava: ${chips?.javaVersion}"
+                        "\n\nMods (${chips?.modList.length})\n${chips?.modList.map((e) => "${e.modName}  v${e.modVersion}  [${e.modId}]").join('\n')}"
+                        "\n\nLine: Error message\n${chips?.errorBlock.map((e) => "${e.lineNumber}: ${e.fullError}").join('\n')}"));
               }
             },
             tooltip: 'Copy',
