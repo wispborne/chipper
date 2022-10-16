@@ -2,22 +2,25 @@ import 'dart:collection';
 import 'dart:ui';
 
 import 'package:chipper/AppState.dart';
+import 'package:chipper/copy.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'ErrorLines.dart';
 import 'ModEntry.dart';
 
 class Readout extends StatelessWidget {
   Readout(LogChips chips, {Key? key}) : super(key: key) {
-    final logChips = chips;
+    _chips = chips;
 
-    _gameVersion = "${logChips.gameVersion}";
-    _os = "${logChips.os}";
-    _javaVersion = "${logChips.javaVersion}";
-    _mods = logChips.modList;
-    _errors = logChips.errorBlock.reversed.toList(growable: false);
+    _gameVersion = "${_chips.gameVersion}";
+    _os = "${_chips.os}";
+    _javaVersion = "${_chips.javaVersion}";
+    _mods = _chips.modList;
+    _errors = _chips.errorBlock.reversed.toList(growable: false);
   }
 
+  late LogChips _chips;
   String? _gameVersion;
   String? _os;
   String? _javaVersion;
@@ -35,7 +38,17 @@ class Readout extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("System", style: theme.textTheme.titleLarge),
+                Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  Text("System", style: theme.textTheme.titleLarge),
+                  IconButton(
+                    tooltip: "Copy",
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: createSystemCopyString(_chips)));
+                    },
+                    icon: const Icon(Icons.copy),
+                    iconSize: 18,
+                  )
+                ]),
                 Text("Starsector: ${_gameVersion!}\nOS: $_os\nJRE: $_javaVersion",
                     style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240))),
               ],
@@ -46,7 +59,33 @@ class Readout extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Mods (${_mods?.length})", style: theme.textTheme.titleLarge),
+                Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  Text("Mods (${_mods?.length})", style: theme.textTheme.titleLarge),
+                  IconButton(
+                    tooltip: "Copy",
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: createModsCopyString(_chips, minify: false)));
+                    },
+                    icon: const Icon(Icons.copy),
+                    iconSize: 18,
+                  ),
+                  IconButton(
+                    tooltip: "Copy (less info)",
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: createModsCopyString(_chips, minify: true)));
+                    },
+                    icon: const Icon(Icons.copy),
+                    iconSize: 14,
+                  ),
+                  IconButton(
+                    tooltip: "Popup",
+                    onPressed: () {
+                      _showMyDialog(context, body: _mods!.map((e) => e.createWidget(context)).toList());
+                    },
+                    icon: const Icon(Icons.open_in_full),
+                    iconSize: 18,
+                  ),
+                ]),
                 ConstrainedBox(
                     constraints: const BoxConstraints(maxHeight: 150),
                     // child: Scrollbar(
@@ -68,7 +107,17 @@ class Readout extends StatelessWidget {
         //         child:
         Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("Errors", style: theme.textTheme.titleLarge),
+          Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            Text("Errors", style: theme.textTheme.titleLarge),
+            IconButton(
+              tooltip: "Copy",
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: createErrorsCopyString(_chips)));
+              },
+              icon: const Icon(Icons.copy),
+              iconSize: 18,
+            )
+          ]),
           Expanded(
               // child: Scrollbar(
               //     scrollbarOrientation:
@@ -152,4 +201,29 @@ class Readout extends StatelessWidget {
     if (index == _errors!.length - 1) return false;
     return _errors![index].lineNumber - 1 != _errors![index + 1].lineNumber;
   }
+}
+
+Future<void> _showMyDialog(BuildContext context, {String? title, List<Widget>? body}) async {
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: title == null ? null : Text(title),
+        content: SingleChildScrollView(
+          child: SelectionArea(
+              child: ListBody(
+            children: body ?? [],
+          )),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Close'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

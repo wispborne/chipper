@@ -8,6 +8,7 @@ import 'package:platform_info/platform_info.dart';
 import 'package:window_size/window_size.dart';
 
 import 'config.dart';
+import 'copy.dart';
 
 void main() async {
   Fimber.plantTree(DebugTree.elapsed(logLevels: ["V", "D", "I", "W", "E"], useColors: true));
@@ -22,7 +23,7 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  static const title = "Chipper v1.5.0";
+  static const title = "Chipper v1.6.0";
   static const subtitle = "  by Wisp";
 
   @override
@@ -43,7 +44,7 @@ class _MyAppState extends State<MyApp> {
     final darkTheme = ThemeData.dark(useMaterial3: true);
     final lightTheme = ThemeData.light(useMaterial3: true);
     return MaterialApp(
-      title: 'Chipper',
+      title: MyApp.title,
       debugShowCheckedModeBanner: false,
       theme: lightTheme,
       darkTheme: darkTheme,
@@ -168,9 +169,8 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               if (chips != null) {
                 Clipboard.setData(ClipboardData(
-                    text: "Game: ${chips?.gameVersion}\nOS: ${chips?.os}\nJava: ${chips?.javaVersion}"
-                        "\n\nMods (${chips?.modList.length})\n${chips?.modList.map((e) => "${e.modName}  v${e.modVersion}  [${e.modId}]").join('\n')}"
-                        "\n\nLine: Error message\n${chips?.errorBlock.map((e) => "${e.lineNumber}: ${e.fullError}").join('\n')}"));
+                    text:
+                        "${createSystemCopyString(chips)}\n\n${createModsCopyString(chips)}\n\n${createErrorsCopyString(chips)}"));
               }
             },
             tooltip: 'Copy',
