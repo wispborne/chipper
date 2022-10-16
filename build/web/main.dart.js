@@ -8107,7 +8107,7 @@ a_j:function a_j(a){this.a=a},
 a_k:function a_k(a){this.a=a},
 S5(){var s=0,r=A.Z(t.z),q,p,o
 var $async$S5=A.a_(function(a,b){if(a===1)return A.W(b,r)
-while(true)switch(s){case 0:q=A.a(["V","D","I","W","E"],t.s)
+while(true)switch(s){case 0:q=A.a(["D","I","W","E"],t.s)
 p=new A.nu()
 $.og()
 q=new A.E4(q,0,p,A.z(t.N,t.y1))
@@ -8129,7 +8129,7 @@ if($.aL==null)A.ayC()
 q=$.aL
 q.N_(B.EW)
 q.C5()
-A.ajV("Chipper v1.6.0  by Wisp")
+A.ajV("Chipper v1.6.0 by Wisp")
 return A.X(null,r)}})
 return A.Y($async$S5,r)},
 vN:function vN(a){this.a=a},
@@ -8275,7 +8275,7 @@ q=r.length
 p=0
 for(;p<r.length;r.length===q||(0,A.H)(r),++p)r[p].a4H(a,b,c,d,null)},
 avb(a){var s,r,q,p,o
-for(s=a.a,r=t.pN,q=0;q<5;++q){p=s[q]
+for(s=a.a,r=t.pN,q=0;q<4;++q){p=s[q]
 o=$.ahP.j(0,p)
 if(o==null){o=A.a([],r)
 $.ahP.p(0,p,o)}o.push(a)}},
@@ -37962,7 +37962,7 @@ al(){this.aH()
 $.Sa().a3(0,new A.ac9(this))},
 E(a){var s=A.a7W(B.U,!0),r=A.a7W(B.ae,!0)
 $.Sa()
-return new A.vA(B.EX,"Chipper v1.6.0",r,s,$.pC?B.eS:B.w4,!1,null)}}
+return new A.vA(B.EX,"Chipper v1.6.0 by Wisp",r,s,$.pC?B.eS:B.w4,!1,null)}}
 A.ac9.prototype={
 $0(){this.a.ah(new A.ac8())},
 $S:0}

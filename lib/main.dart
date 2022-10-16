@@ -11,7 +11,7 @@ import 'config.dart';
 import 'copy.dart';
 
 void main() async {
-  Fimber.plantTree(DebugTree.elapsed(logLevels: ["V", "D", "I", "W", "E"], useColors: true));
+  Fimber.plantTree(DebugTree.elapsed(logLevels: ["D", "I", "W", "E"], useColors: true));
   Fimber.i("Logging started.");
   Fimber.i("Platform: ${Platform.I.operatingSystem.name} ${Platform.I.version}.");
   Hive.init("chipper.config");
@@ -23,8 +23,8 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  static const title = "Chipper v1.6.0";
-  static const subtitle = "  by Wisp";
+  static const title = "Chipper v1.6.0 by Wisp";
+  static const subtitle = "";
 
   @override
   State<StatefulWidget> createState() => _MyAppState();
