@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:chipper/ModEntry.dart';
 import 'package:collection/collection.dart';
+import 'package:fimber/fimber.dart';
 
 import 'AppState.dart';
 import 'ErrorLines.dart';
@@ -19,7 +20,7 @@ class LogParser {
   final modList = List<ModEntry>.empty(growable: true);
   final errorBlock = List<LogLine>.empty(growable: true);
 
-  void parse(String stream) async {
+  Future<LogChips?> parse(String stream) async {
     String? gameVersion;
     String? os;
     String? javaVersion;
@@ -94,16 +95,14 @@ class LogParser {
         }
       });
 
-      javaVersion ??= "(no java version in log)";
+      // javaVersion ??= "(no java version in log)";
 
       var chips =
           LogChips(gameVersion, os, javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock));
-      AppState.loadedLog.chips = chips;
-      print("Parsing took ${stopwatch.elapsedMilliseconds} ms");
-      // return chips;
+      Fimber.i("Parsing took ${stopwatch.elapsedMilliseconds} ms");
+      return chips;
     } catch (e, stacktrace) {
-      print(e);
-      print(stacktrace);
+      Fimber.e("Parsing failed.", ex: e, stacktrace: stacktrace);
       return null;
     }
   }

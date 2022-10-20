@@ -1,7 +1,7 @@
 import 'package:chipper/AppState.dart';
 
 String createSystemCopyString(LogChips? chips) =>
-    "Game: ${chips?.gameVersion}\nOS: ${chips?.os}\nJava: ${chips?.javaVersion}";
+    "Game: ${chips?.gameVersion ?? "Not found in log."}\nOS: ${chips?.os ?? "Not found in log."}\nJava: ${chips?.javaVersion ?? "Not found in log."}";
 
 String createModsCopyString(LogChips? chips, {bool minify = false}) =>
     "Mods (${chips?.modList.length})\n${chips?.modList.map((e) => minify ? "${e.modId} ${e.modVersion}" : "${e.modName}  v${e.modVersion}  [${e.modId}]").join('\n')}";

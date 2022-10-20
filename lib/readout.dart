@@ -13,9 +13,9 @@ class Readout extends StatelessWidget {
   Readout(LogChips chips, {Key? key}) : super(key: key) {
     _chips = chips;
 
-    _gameVersion = "${_chips.gameVersion}";
-    _os = "${_chips.os}";
-    _javaVersion = "${_chips.javaVersion}";
+    _gameVersion = _chips.gameVersion ?? "Not found in log.";
+    _os = _chips.os ?? "Not found in log.";
+    _javaVersion = _chips.javaVersion ?? "Not found in log.";
     _mods = _chips.modList;
     _errors = _chips.errorBlock.reversed.toList(growable: false);
   }
