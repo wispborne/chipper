@@ -6,6 +6,7 @@ import 'package:fimber/fimber.dart';
 
 import 'AppState.dart';
 import 'ErrorLines.dart';
+import 'logging.dart';
 
 class LogParser {
   final gameVersionRegex = RegExp(" - Starting Starsector (.*?) launcher");
@@ -21,6 +22,7 @@ class LogParser {
   final errorBlock = List<LogLine>.empty(growable: true);
 
   Future<LogChips?> parse(String stream) async {
+    initLogging(); // Needed because isolate has its own memory.
     String? gameVersion;
     String? os;
     String? javaVersion;

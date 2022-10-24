@@ -9,21 +9,23 @@ import 'package:desktop_drop/desktop_drop.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
+import 'AppState.dart' as state;
 import 'AppState.dart';
 import 'logging.dart';
 
-class DesktopDrop extends StatefulWidget {
+class DesktopDrop extends ConsumerStatefulWidget {
   const DesktopDrop({super.key, this.chips});
 
   final LogChips? chips;
 
   @override
-  State<DesktopDrop> createState() => _DesktopDropState();
+  ConsumerState<DesktopDrop> createState() => _DesktopDropState();
 }
 
-class _DesktopDropState extends State<DesktopDrop> {
+class _DesktopDropState extends ConsumerState<DesktopDrop> {
   bool _dragging = false;
   bool _parsing = false;
   Offset? offset;
@@ -34,21 +36,27 @@ class _DesktopDropState extends State<DesktopDrop> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    ref.listen(state.logRawContents, (provider, value) {
+      if (value == null) return;
+      setState(() {
+        _parsing = true;
+      });
+      compute(handleNewLogContent, value).then((chips) {
+        setState(() {
+          _parsing = false;
+          AppState.loadedLog.chips = chips;
+        });
+      });
+    });
+
     return DropTarget(
         onDragDone: (detail) {
           Fimber.i('onDragDone:');
 
-          setState(() {
-            _parsing = true;
-          });
-
-          final filePaths = detail.files.map((e) => e.path);
-          compute(_handleDroppedFile, filePaths).then((chips) {
-            setState(() {
-              _parsing = false;
-              AppState.loadedLog.chips = chips;
-            });
-          });
+          final filePath = detail.files.map((e) => e.path).first;
+          _handleDroppedFile(filePath)
+              .then((content) => ref.read(state.logRawContents.notifier).update((state) => content));
         },
         onDragUpdated: (details) {
           setState(() {
@@ -104,10 +112,8 @@ class _DesktopDropState extends State<DesktopDrop> {
   }
 }
 
-Future _handleDroppedFile(Iterable<String> droppedFilePaths) async {
-  initLogging(); // Needed because isolate has its own memory.
-
-  final files = droppedFilePaths.map((e) => XFile(e));
+Future<String?> _handleDroppedFile(String droppedFilePaths) async {
+  final files = [droppedFilePaths].map((e) => XFile(e));
   for (final file in files) {
     Fimber.i('  Path:${file.path}'
         '\n  Name:${file.name}'
@@ -118,7 +124,7 @@ Future _handleDroppedFile(Iterable<String> droppedFilePaths) async {
   }
 
   final droppedFile = files.firstOrNull;
-  if (droppedFile == null) return;
+  if (droppedFile == null) return null;
 
   // No need to filter by name for now, in case file has (Copy) or (1) in it.
   // .firstWhereOrNull((element) => element.name == "starsector.log");
@@ -148,10 +154,10 @@ Future _handleDroppedFile(Iterable<String> droppedFilePaths) async {
     }
   }
 
+  return logStream;
+}
+
+Future handleNewLogContent(String logContent) {
   // final wrongLogRegex = RegExp(".*\.log\./d", caseSensitive: false);
-  if (logStream != null) {
-    return LogParser().parse(logStream);
-  } else {
-    Fimber.i("Couldn't read ${droppedFile.name}");
-  }
+  return LogParser().parse(logContent);
 }

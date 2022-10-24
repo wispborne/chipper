@@ -1,9 +1,17 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:chipper/AppState.dart';
 import 'package:chipper/desktop_drop.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:fimber/fimber.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:window_size/window_size.dart';
+import 'AppState.dart' as state;
 
 import 'config.dart';
 import 'copy.dart';
@@ -13,14 +21,14 @@ void main() async {
   initLogging(printPlatformInfo: true);
   Hive.init("chipper.config");
   box = await Hive.openBox("chipperTheme");
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
   setWindowTitle(MyApp.title + MyApp.subtitle);
 }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  static const title = "Chipper v1.7.0 by Wisp";
+  static const title = "Chipper v1.8.0 by Wisp";
   static const subtitle = "";
 
   @override
@@ -57,26 +65,17 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({super.key, required this.title, this.subTitle});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
   final String? subTitle;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  ConsumerState<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends ConsumerState<MyHomePage> {
   LogChips? chips;
 
   @override
@@ -91,87 +90,65 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      // appBar: AppBar(
-      //     // Here we take the value from the MyHomePage object that was created by
-      //     // the App.build method, and use it to set our appbar title.
-      //     title: IntrinsicHeight(
-      //         child: Row(children: [
-      //   Text(
-      //     widget.title,
-      //     style: TextStyle(
-      //         fontSize: Theme.of(context).textTheme.titleLarge?.fontSize),
-      //   ),
-      //   if (widget.subTitle != null)
-      //     Column(
-      //       mainAxisAlignment: MainAxisAlignment.end,
-      //       children: [
-      //         Text(
-      //           widget.subTitle!,
-      //           style: TextStyle(
-      //               fontSize: Theme.of(context).textTheme.titleSmall?.fontSize),
-      //         ),
-      //       ],
-      //     )
-      // ]))),
       body: SelectionArea(
           focusNode: FocusNode(),
           selectionControls: desktopTextSelectionControls,
           child: Stack(children: [
             Center(
-                // Center is a layout widget. It takes a single child and positions it
-                // in the middle of the parent.
-
-                child: Column(
-                    // Column is also a layout widget. It takes a list of children and
-                    // arranges them vertically. By default, it sizes itself to fit its
-                    // children horizontally, and tries to be as tall as its parent.
-                    //
-                    // Invoke "debug painting" (press "p" in the console, choose the
-                    // "Toggle Debug Paint" action from the Flutter Inspector in Android
-                    // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-                    // to see the wireframe for each widget.
-                    //
-                    // Column has various properties to control how it sizes itself and
-                    // how it positions its children. Here we use mainAxisAlignment to
-                    // center the children vertically; the main axis here is the vertical
-                    // axis because Columns are vertical (the cross axis would be
-                    // horizontal).
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                  Expanded(
-                      flex: 1,
-                      child: DesktopDrop(
-                        chips: chips,
-                      )
-                      // FileDropperWin()
-                      // FileDropper()
-                      )
-                ])),
+                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+              Expanded(
+                  flex: 1,
+                  child: DesktopDrop(
+                    chips: chips,
+                  ))
+            ])),
             Align(
                 alignment: Alignment.topRight,
-                child: IconButton(
-                    onPressed: () => AppState.theme.switchThemes(),
-                    icon: Icon(AppState.theme.currentTheme() == ThemeMode.dark ? Icons.sunny : Icons.mode_night))),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  IconButton(
+                      onPressed: () {
+                        if (chips != null) {
+                          Clipboard.setData(ClipboardData(
+                              text:
+                                  "${createSystemCopyString(chips)}\n\n${createModsCopyString(chips)}\n\n${createErrorsCopyString(chips)}"));
+                        }
+                      },
+                      tooltip: "Copy all",
+                      icon: const Icon(Icons.copy_all)),
+                  IconButton(
+                      tooltip: "Switch theme",
+                      onPressed: () => AppState.theme.switchThemes(),
+                      icon: Icon(AppState.theme.currentTheme() == ThemeMode.dark ? Icons.sunny : Icons.mode_night))
+                ])),
           ])),
       floatingActionButton: Padding(
           padding: const EdgeInsets.only(right: 20),
           child: FloatingActionButton(
-            onPressed: () {
-              if (chips != null) {
-                Clipboard.setData(ClipboardData(
-                    text:
-                        "${createSystemCopyString(chips)}\n\n${createModsCopyString(chips)}\n\n${createErrorsCopyString(chips)}"));
+            onPressed: () async {
+              try {
+                FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+                if (result?.files.single != null) {
+                  var file = result!.files.single;
+
+                  if (kIsWeb) {
+                    final content = utf8.decode(file.bytes!.toList(), allowMalformed: true);
+                    ref.read(state.logRawContents.notifier).update((state) => content);
+                  } else {
+                    ref
+                        .read(state.logRawContents.notifier)
+                        .update((state) => utf8.decode(File(file.path!).readAsBytesSync(), allowMalformed: true));
+                  }
+                } else {
+                  Fimber.w("Error reading file! $result");
+                }
+              } catch (e, stackTrace) {
+                Fimber.e("Error reading log file.", ex: e, stacktrace: stackTrace);
               }
             },
-            tooltip: 'Copy',
-            child: const Icon(Icons.copy),
+            tooltip: 'Upload log file',
+            child: const Icon(Icons.upload_file),
           )), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

@@ -5,6 +5,7 @@ import 'package:chipper/MyTheme.dart';
 import 'package:chipper/extensions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'ErrorLines.dart';
 
@@ -12,6 +13,8 @@ class AppState {
   static LoadedLog loadedLog = LoadedLog();
   static MyTheme theme = MyTheme();
 }
+
+final logRawContents  = StateProvider<String?>((ref) => null);
 
 class LoadedLog extends ChangeNotifier {
   LogChips? _chips;
