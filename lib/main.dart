@@ -5,14 +5,14 @@ import 'package:chipper/AppState.dart';
 import 'package:chipper/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fimber/fimber.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
+import 'package:platform_info/platform_info.dart';
 import 'package:window_size/window_size.dart';
-import 'AppState.dart' as state;
 
+import 'AppState.dart' as state;
 import 'config.dart';
 import 'copy.dart';
 import 'logging.dart';
@@ -132,7 +132,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                 if (result?.files.single != null) {
                   var file = result!.files.single;
 
-                  if (kIsWeb) {
+                  if (Platform.I.isWeb) {
                     final content = utf8.decode(file.bytes!.toList(), allowMalformed: true);
                     ref.read(state.logRawContents.notifier).update((state) => content);
                   } else {
