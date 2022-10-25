@@ -159,14 +159,22 @@ class Readout extends StatelessWidget {
                                                 snacker.showSnackBar(SnackBar(
                                                   behavior: SnackBarBehavior.floating,
                                                   content: SelectionArea(
-                                                      child: Column(
-                                                          mainAxisSize: MainAxisSize.min,
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                        prevThreadMessage.createLogWidget(context),
-                                                        _errors![index].createLogWidget(context)
-                                                      ])),
-                                                  duration: Duration(days: 1),
+                                                      child: Row(children: [
+                                                    Column(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          prevThreadMessage.createLogWidget(context),
+                                                          _errors![index].createLogWidget(context)
+                                                        ]),
+                                                        const Spacer(),
+                                                        IconButton(
+                                                          onPressed: () => snacker.clearSnackBars(),
+                                                          icon: const Icon(Icons.close),
+                                                          color: theme.colorScheme.onInverseSurface,
+                                                        ),
+                                                  ])),
+                                                  duration: const Duration(days: 1),
                                                 ));
                                               },
                                               padding: EdgeInsets.zero,

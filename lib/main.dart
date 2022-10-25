@@ -25,17 +25,17 @@ void main() async {
   setWindowTitle(MyApp.title + MyApp.subtitle);
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
-  static const title = "Chipper v1.8.0 by Wisp";
+  static const title = "Chipper v1.9.0 by Wisp";
   static const subtitle = "";
 
   @override
-  State<StatefulWidget> createState() => _MyAppState();
+  ConsumerState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
@@ -48,20 +48,24 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     final darkTheme = ThemeData.dark(useMaterial3: true);
     final lightTheme = ThemeData.light(useMaterial3: true);
-    return MaterialApp(
-      title: MyApp.title,
-      debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      // .copyWith(
-      // snackBarTheme: SnackBarThemeData(
-      //     backgroundColor: darkTheme.colorScheme.surface,
-      //     actionTextColor: darkTheme.hintColor,
-      //     contentTextStyle: darkTheme.primaryTextTheme.bodyMedium,
-      //     disabledActionTextColor: darkTheme.disabledColor)),
-      themeMode: AppState.theme.currentTheme(),
-      home: const MyHomePage(title: MyApp.title, subTitle: MyApp.subtitle),
-    );
+    return CallbackShortcuts(
+        bindings: {
+          const SingleActivator(LogicalKeyboardKey.keyV, control: true): () async {
+            var clipboardData = (await Clipboard.getData(Clipboard.kTextPlain))?.text;
+
+            if (clipboardData?.isNotEmpty == true) {
+              ref.read(state.logRawContents.notifier).update((state) => clipboardData);
+            }
+          }
+        },
+        child: MaterialApp(
+          title: MyApp.title,
+          debugShowCheckedModeBanner: false,
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: AppState.theme.currentTheme(),
+          home: const MyHomePage(title: MyApp.title, subTitle: MyApp.subtitle),
+        ));
   }
 }
 
