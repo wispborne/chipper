@@ -115,30 +115,39 @@ class _DesktopDropState extends ConsumerState<DesktopDrop> {
                                   TextSpan(children: [
                                     TextSpan(
                                       text: "\n\nWindows: ",
-                                      style: theme.textTheme.headlineSmall?.copyWith(fontSize: 20),
+                                      style: theme.textTheme.headlineSmall?.copyWith(
+                                          fontSize: 20, color: theme.textTheme.headlineSmall?.color?.withOpacity(0.6)),
                                     ),
                                     TextSpan(
                                       text: _winPath,
-                                      style: theme.textTheme.headlineSmall
-                                          ?.copyWith(fontWeight: FontWeight.w500, fontSize: 18),
+                                      style: theme.textTheme.headlineSmall?.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 18,
+                                          color: theme.textTheme.headlineSmall?.color?.withOpacity(0.7)),
                                     ),
                                     TextSpan(
                                       text: "\n\nMacOS: ",
-                                      style: theme.textTheme.headlineSmall?.copyWith(fontSize: 20),
+                                      style: theme.textTheme.headlineSmall?.copyWith(
+                                          fontSize: 20, color: theme.textTheme.headlineSmall?.color?.withOpacity(0.6)),
                                     ),
                                     TextSpan(
                                       text: _macPath,
-                                      style: theme.textTheme.headlineSmall
-                                          ?.copyWith(fontWeight: FontWeight.w500, fontSize: 18),
+                                      style: theme.textTheme.headlineSmall?.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 18,
+                                          color: theme.textTheme.headlineSmall?.color?.withOpacity(0.7)),
                                     ),
                                     TextSpan(
                                       text: "\n\nLinux: ",
-                                      style: theme.textTheme.headlineSmall?.copyWith(fontSize: 20),
+                                      style: theme.textTheme.headlineSmall?.copyWith(
+                                          fontSize: 20, color: theme.textTheme.headlineSmall?.color?.withOpacity(0.6)),
                                     ),
                                     TextSpan(
                                       text: _linuxPath,
-                                      style: theme.textTheme.headlineSmall
-                                          ?.copyWith(fontWeight: FontWeight.w500, fontSize: 18),
+                                      style: theme.textTheme.headlineSmall?.copyWith(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 18,
+                                          color: theme.textTheme.headlineSmall?.color?.withOpacity(0.7)),
                                     ),
                                   ]),
                                   textAlign: TextAlign.left,

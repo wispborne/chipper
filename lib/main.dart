@@ -20,7 +20,7 @@ import 'config.dart';
 import 'copy.dart';
 import 'logging.dart';
 
-const chipperTitle = "Chipper v1.10.1";
+const chipperTitle = "Chipper v1.11.0";
 const chipperSubtitle = " by Wisp";
 
 void main() async {
@@ -49,7 +49,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final darkTheme = ThemeData.dark(useMaterial3: false);
+    var darkTheme = ThemeData(brightness: Brightness.dark);
     final lightTheme = ThemeData.light(useMaterial3: false);
     return CallbackShortcuts(
         bindings: {const SingleActivator(LogicalKeyboardKey.keyV, control: true): () => pasteLog(ref)},
@@ -57,7 +57,13 @@ class _MyAppState extends ConsumerState<MyApp> {
           title: chipperTitle + chipperSubtitle,
           debugShowCheckedModeBanner: false,
           theme: lightTheme,
-          darkTheme: darkTheme,
+          darkTheme: darkTheme.copyWith(
+              colorScheme: darkTheme.colorScheme.copyWith(
+                  primary: const Color.fromRGBO(73, 252, 255, 1),
+                  secondary: const Color.fromRGBO(59, 203, 232, 1),
+                  tertiary: const Color.fromRGBO(0, 255, 255, 1)),
+              scaffoldBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
+              dialogBackgroundColor: const Color.fromRGBO(14, 22, 43, 1)),
           themeMode: AppState.theme.currentTheme(),
           home: const MyHomePage(title: chipperTitle, subTitle: chipperSubtitle),
         ));
@@ -141,7 +147,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                                 ])),
                                 body: [
                                   ConstrainedBox(
-                                      constraints: BoxConstraints(maxWidth: 600),
+                                      constraints: const BoxConstraints(maxWidth: 600),
                                       child: Column(
                                         children: [
                                           Text(
