@@ -14,7 +14,6 @@ import 'package:http/http.dart' as http;
 
 import 'AppState.dart' as state;
 import 'AppState.dart';
-import 'logging.dart';
 
 class DesktopDrop extends ConsumerStatefulWidget {
   const DesktopDrop({super.key, this.chips});
@@ -40,12 +39,14 @@ class _DesktopDropState extends ConsumerState<DesktopDrop> {
     ref.listen(state.logRawContents, (provider, value) {
       if (value == null) return;
       setState(() {
+        Fimber.i("Parsing true");
         _parsing = true;
       });
       compute(handleNewLogContent, value).then((chips) {
+        AppState.loadedLog.chips = chips;
         setState(() {
+          Fimber.i("Parsing false");
           _parsing = false;
-          AppState.loadedLog.chips = chips;
         });
       });
     });
@@ -80,7 +81,7 @@ class _DesktopDropState extends ConsumerState<DesktopDrop> {
             padding: const EdgeInsets.only(left: 20, top: 20, right: 20, bottom: 20),
             child: (_parsing == true || widget.chips == null)
                 ? Container(
-                    constraints: const BoxConstraints(minWidth: double.infinity, minHeight: double.infinity),
+                    constraints: const BoxConstraints(),
                     child: Center(
                         widthFactor: 1.5,
                         child: _parsing

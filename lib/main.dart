@@ -28,7 +28,7 @@ void main() async {
 class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
-  static const title = "Chipper v1.9.0 by Wisp";
+  static const title = "Chipper v1.10.0 by Wisp";
   static const subtitle = "";
 
   @override
@@ -46,18 +46,10 @@ class _MyAppState extends ConsumerState<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final darkTheme = ThemeData.dark(useMaterial3: true);
-    final lightTheme = ThemeData.light(useMaterial3: true);
+    final darkTheme = ThemeData.dark(useMaterial3: false);
+    final lightTheme = ThemeData.light(useMaterial3: false);
     return CallbackShortcuts(
-        bindings: {
-          const SingleActivator(LogicalKeyboardKey.keyV, control: true): () async {
-            var clipboardData = (await Clipboard.getData(Clipboard.kTextPlain))?.text;
-
-            if (clipboardData?.isNotEmpty == true) {
-              ref.read(state.logRawContents.notifier).update((state) => clipboardData);
-            }
-          }
-        },
+        bindings: {const SingleActivator(LogicalKeyboardKey.keyV, control: true): () => pasteLog(ref)},
         child: MaterialApp(
           title: MyApp.title,
           debugShowCheckedModeBanner: false,
@@ -66,6 +58,14 @@ class _MyAppState extends ConsumerState<MyApp> {
           themeMode: AppState.theme.currentTheme(),
           home: const MyHomePage(title: MyApp.title, subTitle: MyApp.subtitle),
         ));
+  }
+}
+
+Future<void> pasteLog(WidgetRef ref) async {
+  var clipboardData = (await Clipboard.getData(Clipboard.kTextPlain))?.text;
+
+  if (clipboardData?.isNotEmpty == true) {
+    ref.read(state.logRawContents.notifier).update((state) => clipboardData);
   }
 }
 
@@ -95,37 +95,42 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SelectionArea(
-          focusNode: FocusNode(),
-          selectionControls: desktopTextSelectionControls,
-          child: Stack(children: [
-            Center(
-                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-              Expanded(
-                  flex: 1,
-                  child: DesktopDrop(
-                    chips: chips,
-                  ))
-            ])),
-            Align(
-                alignment: Alignment.topRight,
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  IconButton(
-                      onPressed: () {
-                        if (chips != null) {
-                          Clipboard.setData(ClipboardData(
-                              text:
-                                  "${createSystemCopyString(chips)}\n\n${createModsCopyString(chips)}\n\n${createErrorsCopyString(chips)}"));
-                        }
-                      },
-                      tooltip: "Copy all",
-                      icon: const Icon(Icons.copy_all)),
-                  IconButton(
-                      tooltip: "Switch theme",
-                      onPressed: () => AppState.theme.switchThemes(),
-                      icon: Icon(AppState.theme.currentTheme() == ThemeMode.dark ? Icons.sunny : Icons.mode_night))
-                ])),
-          ])),
+      body: Column(children: [
+        SizedBox(
+            height: 30,
+            child: Padding(
+                padding: const EdgeInsets.only(left: 5, top: 5, right: 5),
+                child: Row(children: [
+                  Row(mainAxisSize: MainAxisSize.min, children: [
+                    if (chips != null)
+                      IconButton(
+                          onPressed: () {
+                            if (chips != null) {
+                              Clipboard.setData(ClipboardData(
+                                  text:
+                                      "${createSystemCopyString(chips)}\n\n${createModsCopyString(chips)}\n\n${createErrorsCopyString(chips)}"));
+                            }
+                          },
+                          tooltip: "Copy all",
+                          icon: const Icon(Icons.copy_all)),
+                    IconButton(
+                        onPressed: () => pasteLog(ref), tooltip: "Paste tog (ctrl-V)", icon: const Icon(Icons.paste)),
+                  ]),
+                  const Spacer(),
+                  Row(mainAxisSize: MainAxisSize.min, children: [
+                    IconButton(
+                        tooltip: "Switch theme",
+                        onPressed: () => AppState.theme.switchThemes(),
+                        icon: Icon(AppState.theme.currentTheme() == ThemeMode.dark ? Icons.sunny : Icons.mode_night))
+                  ])
+                ]))),
+        Expanded(
+            child: SizedBox(
+                width: double.infinity,
+                child: DesktopDrop(
+                  chips: chips,
+                )))
+      ]),
       floatingActionButton: Padding(
           padding: const EdgeInsets.only(right: 20),
           child: FloatingActionButton(
