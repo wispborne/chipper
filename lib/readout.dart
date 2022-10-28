@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:chipper/AppState.dart';
 import 'package:chipper/copy.dart';
+import 'package:chipper/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -85,7 +86,7 @@ class Readout extends StatelessWidget {
                   IconButton(
                     tooltip: "Popup",
                     onPressed: () {
-                      _showMyDialog(context, body: [ModsList(mods: _mods)]);
+                      showMyDialog(context, body: [ModsList(mods: _mods)]);
                     },
                     icon: Icon(Icons.open_in_full, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
                     iconSize: 20,
@@ -94,7 +95,7 @@ class Readout extends StatelessWidget {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxHeight: 150),
                   child: InkWell(
-                      onTap: () => _showMyDialog(context, body: [ModsList(mods: _mods)]),
+                      onTap: () => showMyDialog(context, body: [ModsList(mods: _mods)]),
                       mouseCursor: SystemMouseCursors.click,
                       child: ListView.builder(
                           itemCount: _mods!.length,
@@ -220,29 +221,4 @@ class ModsList extends StatelessWidget {
           ...mods!.map((e) => e.createWidget(context)).toList()
         ],
       );
-}
-
-Future<void> _showMyDialog(BuildContext context, {String? title, List<Widget>? body}) async {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: title == null ? null : Text(title),
-        content: SingleChildScrollView(
-          child: SelectionArea(
-              child: ListBody(
-            children: body ?? [],
-          )),
-        ),
-        actions: <Widget>[
-          TextButton(
-            child: const Text('Close'),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
 }

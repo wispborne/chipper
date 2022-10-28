@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:chipper/ModEntry.dart';
 import 'package:chipper/MyTheme.dart';
-import 'package:chipper/extensions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

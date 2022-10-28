@@ -3,13 +3,16 @@ import 'dart:io';
 
 import 'package:chipper/AppState.dart';
 import 'package:chipper/desktop_drop.dart';
+import 'package:chipper/utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:platform_info/platform_info.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:window_size/window_size.dart';
 
 import 'AppState.dart' as state;
@@ -17,19 +20,19 @@ import 'config.dart';
 import 'copy.dart';
 import 'logging.dart';
 
+const chipperTitle = "Chipper v1.10.1";
+const chipperSubtitle = " by Wisp";
+
 void main() async {
   initLogging(printPlatformInfo: true);
   Hive.init("chipper.config");
   box = await Hive.openBox("chipperTheme");
   runApp(const ProviderScope(child: MyApp()));
-  setWindowTitle(MyApp.title + MyApp.subtitle);
+  setWindowTitle(chipperTitle + chipperSubtitle);
 }
 
 class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
-
-  static const title = "Chipper v1.10.0 by Wisp";
-  static const subtitle = "";
 
   @override
   ConsumerState createState() => _MyAppState();
@@ -51,12 +54,12 @@ class _MyAppState extends ConsumerState<MyApp> {
     return CallbackShortcuts(
         bindings: {const SingleActivator(LogicalKeyboardKey.keyV, control: true): () => pasteLog(ref)},
         child: MaterialApp(
-          title: MyApp.title,
+          title: chipperTitle + chipperSubtitle,
           debugShowCheckedModeBanner: false,
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: AppState.theme.currentTheme(),
-          home: const MyHomePage(title: MyApp.title, subTitle: MyApp.subtitle),
+          home: const MyHomePage(title: chipperTitle, subTitle: chipperSubtitle),
         ));
   }
 }
@@ -94,6 +97,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       body: Column(children: [
         SizedBox(
@@ -114,14 +118,71 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           tooltip: "Copy all",
                           icon: const Icon(Icons.copy_all)),
                     IconButton(
-                        onPressed: () => pasteLog(ref), tooltip: "Paste tog (ctrl-V)", icon: const Icon(Icons.paste)),
+                        onPressed: () => pasteLog(ref), tooltip: "Paste tog (Ctrl-V)", icon: const Icon(Icons.paste)),
                   ]),
                   const Spacer(),
                   Row(mainAxisSize: MainAxisSize.min, children: [
                     IconButton(
                         tooltip: "Switch theme",
                         onPressed: () => AppState.theme.switchThemes(),
-                        icon: Icon(AppState.theme.currentTheme() == ThemeMode.dark ? Icons.sunny : Icons.mode_night))
+                        icon: Icon(AppState.theme.currentTheme() == ThemeMode.dark ? Icons.sunny : Icons.mode_night)),
+                    IconButton(
+                        tooltip: "About Chipper",
+                        onPressed: () => showMyDialog(context,
+                                title: Center(
+                                    child: Column(children: [
+                                  Text(
+                                    chipperTitle,
+                                    style: theme.textTheme.titleLarge?.copyWith(fontSize: 24),
+                                  ),
+                                  Text("A Starsector log viewer", style: theme.textTheme.labelLarge),
+                                  Text("by Wisp", style: theme.textTheme.labelLarge),
+                                  const Divider(),
+                                ])),
+                                body: [
+                                  ConstrainedBox(
+                                      constraints: BoxConstraints(maxWidth: 600),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            "What's it do?",
+                                            style: theme.textTheme.titleLarge,
+                                          ),
+                                          SizedBox.fromSize(
+                                            size: const Size.fromHeight(5),
+                                          ),
+                                          const Text(
+                                              "The first part of troubleshooting Starsector issues is looking through a log file for errors, and often checking for outdated mods.\nChipper pulls useful information out of the log for easier viewing."),
+                                          SizedBox.fromSize(
+                                            size: const Size.fromHeight(20),
+                                          ),
+                                          Text(
+                                            "What do you do with my logs?",
+                                            style: theme.textTheme.titleLarge,
+                                          ),
+                                          SizedBox.fromSize(
+                                            size: const Size.fromHeight(5),
+                                          ),
+                                          const Text(
+                                              "Everything is done on your browser. Neither the file nor any part of it are ever sent over the Internet.\nI do not collect any analytics except for what Cloudflare, the hosting provider, collects by default, which is all anonymous."),
+                                          SizedBox.fromSize(
+                                            size: const Size.fromHeight(30),
+                                          ),
+                                          Text.rich(TextSpan(children: [
+                                            const TextSpan(text: "Created using Flutter, by Google "),
+                                            TextSpan(
+                                                text: "so it'll probably get discontinued next year.",
+                                                style: theme.textTheme.bodySmall)
+                                          ])),
+                                          Linkify(
+                                            text: "Source Code: https://github.com/wispborne/chipper",
+                                            linkifiers: const [UrlLinkifier()],
+                                            onOpen: (link) => launchUrl(Uri.parse(link.url)),
+                                          ),
+                                        ],
+                                      ))
+                                ]),
+                        icon: const Icon(Icons.info))
                   ])
                 ]))),
         Expanded(

@@ -1,4 +1,4 @@
-import 'package:chipper/extensions.dart';
+import 'package:chipper/utils.dart';
 import 'package:flutter/material.dart';
 
 abstract class LogLine {

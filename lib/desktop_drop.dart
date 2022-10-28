@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:chipper/extensions.dart';
 import 'package:chipper/logparser.dart';
 import 'package:chipper/readout.dart';
+import 'package:chipper/utils.dart';
 import 'package:collection/collection.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
@@ -28,9 +28,9 @@ class _DesktopDropState extends ConsumerState<DesktopDrop> {
   bool _dragging = false;
   bool _parsing = false;
   Offset? offset;
-  String msg = "Drop starsector.log here";
-
-  // final ScrollController _scroller = ScrollController();
+  final String _macPath = "/Applications/Starsector.app/logs/starsector.log";
+  final String _winPath = "C:/Program Files (x86)/Fractal Softworks/Starsector/starsector-core/starsector.log";
+  final String _linuxPath = "<game folder>/starsector.log";
 
   @override
   Widget build(BuildContext context) {
@@ -105,10 +105,45 @@ class _DesktopDropState extends ConsumerState<DesktopDrop> {
                                   style: theme.textTheme.headlineMedium,
                                 )
                               ])
-                            : Text(
-                                msg,
-                                style: theme.textTheme.headlineMedium,
-                              )))
+                            : Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                Text(
+                                  "Drop starsector.log here",
+                                  style: theme.textTheme.headlineMedium,
+                                ),
+                                SelectionArea(
+                                    child: Text.rich(
+                                  TextSpan(children: [
+                                    TextSpan(
+                                      text: "\n\nWindows: ",
+                                      style: theme.textTheme.headlineSmall?.copyWith(fontSize: 20),
+                                    ),
+                                    TextSpan(
+                                      text: _winPath,
+                                      style: theme.textTheme.headlineSmall
+                                          ?.copyWith(fontWeight: FontWeight.w500, fontSize: 18),
+                                    ),
+                                    TextSpan(
+                                      text: "\n\nMacOS: ",
+                                      style: theme.textTheme.headlineSmall?.copyWith(fontSize: 20),
+                                    ),
+                                    TextSpan(
+                                      text: _macPath,
+                                      style: theme.textTheme.headlineSmall
+                                          ?.copyWith(fontWeight: FontWeight.w500, fontSize: 18),
+                                    ),
+                                    TextSpan(
+                                      text: "\n\nLinux: ",
+                                      style: theme.textTheme.headlineSmall?.copyWith(fontSize: 20),
+                                    ),
+                                    TextSpan(
+                                      text: _linuxPath,
+                                      style: theme.textTheme.headlineSmall
+                                          ?.copyWith(fontWeight: FontWeight.w500, fontSize: 18),
+                                    ),
+                                  ]),
+                                  textAlign: TextAlign.left,
+                                ))
+                              ])))
                 : Readout(widget.chips!)));
   }
 }
