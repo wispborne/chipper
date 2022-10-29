@@ -8,6 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_color/flutter_color.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
@@ -50,20 +51,34 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   Widget build(BuildContext context) {
     var darkTheme = ThemeData(brightness: Brightness.dark);
+
+    final starsectorLauncher = darkTheme.copyWith(
+        colorScheme: darkTheme.colorScheme.copyWith(
+            primary: const Color.fromRGBO(73, 252, 255, 1),
+            secondary: const Color.fromRGBO(59, 203, 232, 1),
+            tertiary: const Color.fromRGBO(0, 255, 255, 1)),
+        scaffoldBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
+        dialogBackgroundColor: const Color.fromRGBO(14, 22, 43, 1));
+    final halloween = darkTheme.copyWith(
+        colorScheme: darkTheme.colorScheme.copyWith(
+            primary: HexColor("#FF0000"),
+            secondary: HexColor("#FF4D00").lighter(10),
+            tertiary: HexColor("#FF4D00").lighter(20)),
+        scaffoldBackgroundColor: HexColor("#272121"),
+        dialogBackgroundColor: HexColor("#272121"));
     final lightTheme = ThemeData.light(useMaterial3: false);
+
     return CallbackShortcuts(
         bindings: {const SingleActivator(LogicalKeyboardKey.keyV, control: true): () => pasteLog(ref)},
         child: MaterialApp(
           title: chipperTitle + chipperSubtitle,
           debugShowCheckedModeBanner: false,
-          theme: lightTheme,
-          darkTheme: darkTheme.copyWith(
-              colorScheme: darkTheme.colorScheme.copyWith(
-                  primary: const Color.fromRGBO(73, 252, 255, 1),
-                  secondary: const Color.fromRGBO(59, 203, 232, 1),
-                  tertiary: const Color.fromRGBO(0, 255, 255, 1)),
-              scaffoldBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
-              dialogBackgroundColor: const Color.fromRGBO(14, 22, 43, 1)),
+          theme: lightTheme.copyWith(
+              textTheme:
+                  lightTheme.textTheme.copyWith(bodyMedium: lightTheme.textTheme.bodyMedium?.copyWith(fontSize: 16))),
+          darkTheme: halloween.copyWith(
+              textTheme:
+                  darkTheme.textTheme.copyWith(bodyMedium: darkTheme.textTheme.bodyMedium?.copyWith(fontSize: 16))),
           themeMode: AppState.theme.currentTheme(),
           home: const MyHomePage(title: chipperTitle, subTitle: chipperSubtitle),
         ));
@@ -107,7 +122,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     return Scaffold(
       body: Column(children: [
         SizedBox(
-            height: 30,
+            height: 38,
             child: Padding(
                 padding: const EdgeInsets.only(left: 5, top: 5, right: 5),
                 child: Row(children: [
@@ -128,6 +143,16 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                   ]),
                   const Spacer(),
                   Row(mainAxisSize: MainAxisSize.min, children: [
+                    Padding(
+                        padding: const EdgeInsets.only(top: 7),
+                        child: IconButton(
+                            onPressed: () => showMyDialog(context,
+                                title: const Text("Happy Halloween"), body: [Image.asset("assets/images/spooky.png")]),
+                            padding: EdgeInsets.zero,
+                            icon: const ImageIcon(
+                              AssetImage("assets/images/halloween.png"),
+                              size: 48,
+                            ))),
                     IconButton(
                         tooltip: "Switch theme",
                         onPressed: () => AppState.theme.switchThemes(),

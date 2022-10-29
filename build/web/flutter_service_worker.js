@@ -3,7 +3,9 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
-  "assets/AssetManifest.json": "99914b932bd37a50b983c5e7c90ae93b",
+  "assets/AssetManifest.json": "e4a15902f45f8fa6f61e13727a163723",
+"assets/assets/images/halloween.png": "23f3bff876c729a060d19c272dd3c7b7",
+"assets/assets/images/spooky.png": "3e041ad05101fff60c439a1cd5d52d55",
 "assets/FontManifest.json": "7b2a36307916a9721811788013e65289",
 "assets/fonts/MaterialIcons-Regular.otf": "e7069dfd19b331be16bed984668fe080",
 "assets/fonts/RobotoMono-Regular.ttf": "7e173cf37bb8221ac504ceab2acfb195",
@@ -19,9 +21,9 @@ const RESOURCES = {
 "icons/Icon-512.png": "3ce662f5be8fd3471b89503730fc0528",
 "icons/Icon-maskable-192.png": "252ba3844890744d6521e70f206914e3",
 "icons/Icon-maskable-512.png": "3ce662f5be8fd3471b89503730fc0528",
-"index.html": "7fb3db71384bb98a3f71f97e55a64754",
-"/": "7fb3db71384bb98a3f71f97e55a64754",
-"main.dart.js": "65242c8ceefbd49a79c7dcc38f8606cf",
+"index.html": "78ad2535d555eb9f54450594511ef911",
+"/": "78ad2535d555eb9f54450594511ef911",
+"main.dart.js": "0d4e897fec115ce50464343c75958e4f",
 "manifest.json": "44c3090a578e484d96ec2e9393c58676",
 "version.json": "26ac3cf922e6a74e29e7305adf0fc8f5"
 };

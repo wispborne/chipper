@@ -35,29 +35,3 @@ class LogChips {
 
   LogChips(this.gameVersion, this.os, this.javaVersion, this.modList, this.errorBlock);
 }
-
-// class LogChips extends ChangeNotifier {
-//   final List<String> _modList = [];
-//   String? _javaVersion;
-//   final List<LogLine> _errorBlock = [];
-//
-//   UnmodifiableListView<String> get modList => UnmodifiableListView(_modList);
-//
-//   String? get javaVersion => _javaVersion;
-//
-//   UnmodifiableListView<LogLine> get errorBlock =>
-//       UnmodifiableListView(_errorBlock);
-//
-//   set modList(List<String> mods) {
-//     _modList.clear();
-//     _modList.addAll(mods);
-//     notifyListeners();
-//   }
-//
-//   set errorBlock(List<LogLine> errors) {
-//     _errorBlock.clear();
-//     _errorBlock.addAll(errors);
-//     notifyListeners();
-//   }
-// }
-
