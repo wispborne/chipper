@@ -76,7 +76,7 @@ class _MyAppState extends ConsumerState<MyApp> {
           theme: lightTheme.copyWith(
               textTheme:
                   lightTheme.textTheme.copyWith(bodyMedium: lightTheme.textTheme.bodyMedium?.copyWith(fontSize: 16))),
-          darkTheme: halloween.copyWith(
+          darkTheme: starsectorLauncher.copyWith(
               textTheme:
                   darkTheme.textTheme.copyWith(bodyMedium: darkTheme.textTheme.bodyMedium?.copyWith(fontSize: 16))),
           themeMode: AppState.theme.currentTheme(),
@@ -139,20 +139,20 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           tooltip: "Copy all",
                           icon: const Icon(Icons.copy_all)),
                     IconButton(
-                        onPressed: () => pasteLog(ref), tooltip: "Paste tog (Ctrl-V)", icon: const Icon(Icons.paste)),
+                        onPressed: () => pasteLog(ref), tooltip: "Paste log (Ctrl-V)", icon: const Icon(Icons.paste)),
                   ]),
                   const Spacer(),
                   Row(mainAxisSize: MainAxisSize.min, children: [
-                    Padding(
-                        padding: const EdgeInsets.only(top: 7),
-                        child: IconButton(
-                            onPressed: () => showMyDialog(context,
-                                title: const Text("Happy Halloween"), body: [Image.asset("assets/images/spooky.png")]),
-                            padding: EdgeInsets.zero,
-                            icon: const ImageIcon(
-                              AssetImage("assets/images/halloween.png"),
-                              size: 48,
-                            ))),
+                    // Padding(
+                    //     padding: const EdgeInsets.only(top: 7),
+                    //     child: IconButton(
+                    //         onPressed: () => showMyDialog(context,
+                    //             title: const Text("Happy Halloween"), body: [Image.asset("assets/images/spooky.png")]),
+                    //         padding: EdgeInsets.zero,
+                    //         icon: const ImageIcon(
+                    //           AssetImage("assets/images/halloween.png"),
+                    //           size: 48,
+                    //         ))),
                     IconButton(
                         tooltip: "Switch theme",
                         onPressed: () => AppState.theme.switchThemes(),

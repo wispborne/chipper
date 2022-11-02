@@ -39,23 +39,23 @@ class Readout extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 10),
             child: SelectionArea(
                 child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                  Text("System", style: theme.textTheme.titleLarge),
-                  IconButton(
-                    tooltip: "Copy",
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: createSystemCopyString(_chips)));
-                    },
-                    icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
-                    iconSize: 20,
-                  )
-                ]),
-                Text("Starsector: ${_gameVersion!}\nOS: $_os\nJRE: $_javaVersion",
-                    style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240))),
-              ],
-            ))),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                      Text("System", style: theme.textTheme.titleLarge),
+                      IconButton(
+                        tooltip: "Copy",
+                        onPressed: () {
+                          Clipboard.setData(ClipboardData(text: createSystemCopyString(_chips)));
+                        },
+                        icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
+                        iconSize: 20,
+                      )
+                    ]),
+                    Text("Starsector: ${_gameVersion!}\nOS: $_os\nJRE: $_javaVersion",
+                        style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240))),
+                  ],
+                ))),
       if (_mods != null)
         Padding(
             padding: const EdgeInsets.only(bottom: 10),
@@ -83,6 +83,16 @@ class Readout extends StatelessWidget {
                     icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
                     iconSize: 14,
                   ),
+                  // IconButton(
+                  //   tooltip: "Download",
+                  //   onPressed: () {
+                  //     FileSaver.instance.saveAs("mods", Uint8List.fromList(utf8.encode(createModsCopyString(_chips))),
+                  //         "txt", MimeType.TEXT);
+                  //     // Clipboard.setData(ClipboardData(text: createModsCopyString(_chips, minify: true)));
+                  //   },
+                  //   icon: Icon(Icons.file_download, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
+                  //   iconSize: 14,
+                  // ),
                   IconButton(
                     tooltip: "Popup",
                     onPressed: () {
@@ -107,98 +117,98 @@ class Readout extends StatelessWidget {
       if (_errors != null)
         Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            Text("Errors", style: theme.textTheme.titleLarge),
-            IconButton(
-              tooltip: "Copy",
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: createErrorsCopyString(_chips)));
-              },
-              icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
-              iconSize: 20,
-            )
-          ]),
-          Expanded(
-              child: SelectionArea(
-                  child: ListView.builder(
-                      itemCount: _errors!.length,
-                      reverse: true,
-                      itemBuilder: (BuildContext context, int index) {
-                        return _errors![index].isPreviousThreadLine
-                            ? Container(
-                                height: 0,
-                              )
-                            : Column(children: [
-                                if (isConsecutiveWithPreviousLine(index))
-                                  Divider(
-                                    color: theme.disabledColor,
-                                  ),
-                                Container(
-                                    padding: (isConsecutiveWithPreviousLine(index))
-                                        ? const EdgeInsets.only()
-                                        : const EdgeInsets.only(top: 1, bottom: 1),
-                                    child: IntrinsicHeight(
-                                        child: Row(children: [
-                                      Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-                                        Row(children: [
-                                          if (isConsecutiveWithPreviousLine(index))
-                                            SizedBox(
-                                                height: 15,
+              Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                Text("Errors", style: theme.textTheme.titleLarge),
+                IconButton(
+                  tooltip: "Copy",
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: createErrorsCopyString(_chips)));
+                  },
+                  icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
+                  iconSize: 20,
+                )
+              ]),
+              Expanded(
+                  child: SelectionArea(
+                      child: ListView.builder(
+                          itemCount: _errors!.length,
+                          reverse: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            return _errors![index].isPreviousThreadLine
+                                ? Container(
+                              height: 0,
+                            )
+                                : Column(children: [
+                              if (isConsecutiveWithPreviousLine(index))
+                                Divider(
+                                  color: theme.disabledColor,
+                                ),
+                              Container(
+                                  padding: (isConsecutiveWithPreviousLine(index))
+                                      ? const EdgeInsets.only()
+                                      : const EdgeInsets.only(top: 1, bottom: 1),
+                                  child: IntrinsicHeight(
+                                      child: Row(children: [
+                                        Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                                          Row(children: [
+                                            if (isConsecutiveWithPreviousLine(index))
+                                              SizedBox(
+                                                  height: 15,
+                                                  width: 20,
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      var snacker = ScaffoldMessenger.of(context);
+                                                      snacker.clearSnackBars();
+                                                      var prevThreadMessage = _errors!
+                                                          .sublist(0, index)
+                                                          .lastWhere((element) => element.isPreviousThreadLine);
+                                                      snacker.showSnackBar(SnackBar(
+                                                        behavior: SnackBarBehavior.floating,
+                                                        content: SelectionArea(
+                                                            child: Row(children: [
+                                                              Column(
+                                                                  mainAxisSize: MainAxisSize.min,
+                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  children: [
+                                                                    prevThreadMessage.createLogWidget(context),
+                                                                    _errors![index].createLogWidget(context)
+                                                                  ]),
+                                                              const Spacer(),
+                                                              IconButton(
+                                                                onPressed: () => snacker.clearSnackBars(),
+                                                                icon: const Icon(Icons.close),
+                                                                color: theme.colorScheme.onInverseSurface,
+                                                              ),
+                                                            ])),
+                                                        duration: const Duration(days: 1),
+                                                      ));
+                                                    },
+                                                    padding: EdgeInsets.zero,
+                                                    splashRadius: 15,
+                                                    icon: Icon(
+                                                      Icons.info_outline_rounded,
+                                                      color: theme.disabledColor,
+                                                    ),
+                                                    iconSize: 15,
+                                                    tooltip: "View previous entry on this thread.",
+                                                  ))
+                                            else
+                                              Container(
                                                 width: 20,
-                                                child: IconButton(
-                                                  onPressed: () {
-                                                    var snacker = ScaffoldMessenger.of(context);
-                                                    snacker.clearSnackBars();
-                                                    var prevThreadMessage = _errors!
-                                                        .sublist(0, index)
-                                                        .lastWhere((element) => element.isPreviousThreadLine);
-                                                    snacker.showSnackBar(SnackBar(
-                                                      behavior: SnackBarBehavior.floating,
-                                                      content: SelectionArea(
-                                                          child: Row(children: [
-                                                        Column(
-                                                            mainAxisSize: MainAxisSize.min,
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              prevThreadMessage.createLogWidget(context),
-                                                              _errors![index].createLogWidget(context)
-                                                            ]),
-                                                        const Spacer(),
-                                                        IconButton(
-                                                          onPressed: () => snacker.clearSnackBars(),
-                                                          icon: const Icon(Icons.close),
-                                                          color: theme.colorScheme.onInverseSurface,
-                                                        ),
-                                                      ])),
-                                                      duration: const Duration(days: 1),
-                                                    ));
-                                                  },
-                                                  padding: EdgeInsets.zero,
-                                                  splashRadius: 15,
-                                                  icon: Icon(
-                                                    Icons.info_outline_rounded,
-                                                    color: theme.disabledColor,
-                                                  ),
-                                                  iconSize: 15,
-                                                  tooltip: "View previous entry on this thread.",
-                                                ))
-                                          else
-                                            Container(
-                                              width: 20,
-                                            ),
-                                          Text(
-                                            " ${_errors![index].lineNumber}  ",
-                                            style: TextStyle(
-                                                color: theme.hintColor.withAlpha(40),
-                                                fontFeatures: const [FontFeature.tabularFigures()]),
-                                          )
-                                        ])
-                                      ]),
-                                      Expanded(child: _errors![index].createLogWidget(context))
-                                    ])))
-                              ]);
-                      })))
-        ])),
+                                              ),
+                                            Text(
+                                              " ${_errors![index].lineNumber}  ",
+                                              style: TextStyle(
+                                                  color: theme.hintColor.withAlpha(40),
+                                                  fontFeatures: const [FontFeature.tabularFigures()]),
+                                            )
+                                          ])
+                                        ]),
+                                        Expanded(child: _errors![index].createLogWidget(context))
+                                      ])))
+                            ]);
+                          })))
+            ])),
     ]);
   }
 
@@ -214,10 +224,14 @@ class ModsList extends StatelessWidget {
   UnmodifiableListView<ModEntry>? mods;
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(BuildContext context) =>
+      Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Mods (${mods?.length})", style: Theme.of(context).textTheme.titleLarge),
+          Text("Mods (${mods?.length})", style: Theme
+              .of(context)
+              .textTheme
+              .titleLarge),
           ...mods!.map((e) => e.createWidget(context)).toList()
         ],
       );
