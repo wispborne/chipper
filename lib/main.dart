@@ -21,15 +21,15 @@ import 'desktop_drop.dart';
 import 'logging.dart';
 import 'utils.dart';
 
-const chipperTitle = "Chipper v1.12.0";
-const chipperSubtitle = " by Wisp";
+const chipperTitle = "Chipper v1.12.1";
+const chipperSubtitle = "A Starsector log viewer";
 
 void main() async {
   initLogging(printPlatformInfo: true);
   Hive.init("chipper.config");
   box = await Hive.openBox("chipperTheme");
   runApp(const ProviderScope(child: MyApp()));
-  setWindowTitle(chipperTitle + chipperSubtitle);
+  setWindowTitle(chipperTitle);
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -54,13 +54,16 @@ class _MyAppState extends ConsumerState<MyApp> {
     var darkTheme = ThemeData(brightness: Brightness.dark, useMaterial3: material3);
 
     final starsectorLauncher = darkTheme.copyWith(
-        colorScheme: darkTheme.colorScheme.copyWith(
-          primary: const Color.fromRGBO(73, 252, 255, 1),
-          secondary: const Color.fromRGBO(59, 203, 232, 1),
-          tertiary: const Color.fromRGBO(0, 255, 255, 1),
-        ),
-        scaffoldBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
-        dialogBackgroundColor: const Color.fromRGBO(14, 22, 43, 1));
+      colorScheme: darkTheme.colorScheme.copyWith(
+        primary: const Color.fromRGBO(73, 252, 255, 1),
+        secondary: const Color.fromRGBO(59, 203, 232, 1),
+        tertiary: const Color.fromRGBO(0, 255, 255, 1),
+      ),
+      scaffoldBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
+      dialogBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
+      cardColor: const Color.fromRGBO(37, 44, 65, 1),
+      appBarTheme: darkTheme.appBarTheme.copyWith(backgroundColor: const Color.fromRGBO(32, 41, 65, 1.0)),
+    );
     final halloween = darkTheme.copyWith(
         colorScheme: darkTheme.colorScheme.copyWith(
             primary: HexColor("#FF0000"),
@@ -132,12 +135,20 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     final theme = Theme.of(context);
     return Scaffold(
       body: Column(children: [
-        SizedBox(
-            height: 38,
-            child: Padding(
-                padding: const EdgeInsets.only(left: 5, top: 5, right: 5),
+        AppBar(
+            toolbarHeight: 50,
+            title: Padding(
+                padding: const EdgeInsets.only(left: 10, top: 5, right: 5),
                 child: Row(children: [
                   Row(mainAxisSize: MainAxisSize.min, children: [
+                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(widget.title, style: const TextStyle(fontSize: 16)),
+                      Text(
+                        widget.subTitle ?? "",
+                        style: theme.textTheme.labelMedium,
+                      ),
+                    ]),
+                    const SizedBox(width: 20),
                     if (chips != null)
                       IconButton(
                           onPressed: () {
