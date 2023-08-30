@@ -53,17 +53,20 @@ class _MyAppState extends ConsumerState<MyApp> {
     var material3 = AppState.theme.isMaterial3();
     var darkTheme = ThemeData(brightness: Brightness.dark, useMaterial3: material3);
 
+    const starsectorPrimaryColor = Color.fromRGBO(73, 252, 255, 1);
     final starsectorLauncher = darkTheme.copyWith(
-      colorScheme: darkTheme.colorScheme.copyWith(
-        primary: const Color.fromRGBO(73, 252, 255, 1),
-        secondary: const Color.fromRGBO(59, 203, 232, 1),
-        tertiary: const Color.fromRGBO(0, 255, 255, 1),
-      ),
-      scaffoldBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
-      dialogBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
-      cardColor: const Color.fromRGBO(37, 44, 65, 1),
-      appBarTheme: darkTheme.appBarTheme.copyWith(backgroundColor: const Color.fromRGBO(32, 41, 65, 1.0)),
-    );
+        colorScheme: darkTheme.colorScheme.copyWith(
+          primary: starsectorPrimaryColor,
+          secondary: const Color.fromRGBO(59, 203, 232, 1),
+          tertiary: const Color.fromRGBO(0, 255, 255, 1),
+        ),
+        scaffoldBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
+        dialogBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
+        cardColor: const Color.fromRGBO(37, 44, 65, 1),
+        appBarTheme: darkTheme.appBarTheme.copyWith(backgroundColor: const Color.fromRGBO(32, 41, 65, 1.0)),
+        floatingActionButtonTheme: darkTheme.floatingActionButtonTheme
+            .copyWith(backgroundColor: starsectorPrimaryColor, foregroundColor: darkTheme.colorScheme.surface));
+
     final halloween = darkTheme.copyWith(
         colorScheme: darkTheme.colorScheme.copyWith(
             primary: HexColor("#FF0000"),
@@ -76,7 +79,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     var defaultLightTheme = ThemeData.light(useMaterial3: material3);
     final lightTheme = defaultLightTheme.copyWith(
       colorScheme: defaultLightTheme.colorScheme.copyWith(
-          primary: const Color.fromRGBO(73, 252, 255, 1),
+          primary: starsectorPrimaryColor,
           secondary: const Color.fromRGBO(59, 203, 232, 1),
           tertiary: const Color.fromRGBO(0, 255, 255, 1)),
     );
@@ -136,19 +139,19 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
     return Scaffold(
       body: Column(children: [
         AppBar(
-            toolbarHeight: 50,
+            toolbarHeight: 70,
             title: Padding(
                 padding: const EdgeInsets.only(left: 10, top: 5, right: 5),
                 child: Row(children: [
                   Row(mainAxisSize: MainAxisSize.min, children: [
                     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(widget.title, style: const TextStyle(fontSize: 16)),
+                      Text(widget.title),
                       Text(
                         widget.subTitle ?? "",
-                        style: theme.textTheme.labelMedium,
+                        style: theme.textTheme.labelLarge,
                       ),
                     ]),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 30),
                     if (chips != null)
                       IconButton(
                           onPressed: () {
@@ -182,7 +185,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                     IconButton(
                         tooltip: "Switch density",
                         onPressed: () => AppState.theme.switchMaterial(),
-                        icon: Icon(AppState.theme.isMaterial3() ? Icons.density_small : Icons.density_medium)),
+                        icon: Icon(AppState.theme.isMaterial3() ? Icons.view_compact : Icons.view_cozy)),
                     IconButton(
                         tooltip: "About Chipper",
                         onPressed: () => showMyDialog(context,
