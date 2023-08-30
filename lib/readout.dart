@@ -1,4 +1,3 @@
-import 'dart:collection';
 import 'dart:ui';
 
 import 'package:chipper/AppState.dart';
@@ -6,7 +5,6 @@ import 'package:chipper/copy.dart';
 import 'package:chipper/selection_transformer.dart';
 import 'package:chipper/utils.dart';
 import 'package:collection/collection.dart';
-import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

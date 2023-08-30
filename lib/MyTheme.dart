@@ -9,8 +9,8 @@ class MyTheme with ChangeNotifier {
 
   MyTheme() {
     if (box.containsKey(_key)) {
-      _isDark = box.get(_key);
-      _isMaterial3 = box.get(_keyMaterial);
+      _isDark = box.get(_key) ?? true;
+      _isMaterial3 = box.get(_keyMaterial) ?? false;
     }
   }
 
