@@ -1,5 +1,6 @@
-import 'package:chipper/config.dart';
 import 'package:flutter/material.dart';
+
+import 'config.dart';
 
 class MyTheme with ChangeNotifier {
   static bool _isDark = true;

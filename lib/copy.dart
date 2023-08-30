@@ -1,4 +1,4 @@
-import 'package:chipper/AppState.dart';
+import 'AppState.dart';
 
 String createSystemCopyString(LogChips? chips) =>
     "Game: ${chips?.gameVersion ?? "Not found in log."}\nOS: ${chips?.os ?? "Not found in log."}\nJava: ${chips?.javaVersion ?? "Not found in log."}";

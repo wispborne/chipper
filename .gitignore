@@ -34,6 +34,9 @@ doc/api/
 .flutter-plugins
 .flutter-plugins-dependencies
 
+# Wisp: Don't ignore any files in the web build directory.
+!/build/web/**
+
 ### Dart Patch ###
 # dotenv environment variables file
 .env

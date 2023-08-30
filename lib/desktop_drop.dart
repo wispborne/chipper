@@ -1,8 +1,5 @@
 import 'dart:convert';
 
-import 'package:chipper/logparser.dart';
-import 'package:chipper/readout.dart';
-import 'package:chipper/utils.dart';
 import 'package:collection/collection.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:desktop_drop/desktop_drop.dart';
@@ -14,6 +11,9 @@ import 'package:http/http.dart' as http;
 
 import 'AppState.dart' as state;
 import 'AppState.dart';
+import 'logparser.dart';
+import 'readout.dart';
+import 'utils.dart';
 
 class DesktopDrop extends ConsumerStatefulWidget {
   const DesktopDrop({super.key, this.chips});

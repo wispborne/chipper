@@ -1,19 +1,19 @@
 import 'dart:collection';
 
-import 'package:chipper/ModEntry.dart';
-import 'package:chipper/MyTheme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'ErrorLines.dart';
+import 'ModEntry.dart';
+import 'MyTheme.dart';
 
 class AppState {
   static LoadedLog loadedLog = LoadedLog();
   static MyTheme theme = MyTheme();
 }
 
-final logRawContents  = StateProvider<String?>((ref) => null);
+final logRawContents = StateProvider<String?>((ref) => null);
 
 class LoadedLog extends ChangeNotifier {
   LogChips? _chips;

@@ -1,5 +1,6 @@
-import 'package:chipper/utils.dart';
 import 'package:flutter/material.dart';
+
+import 'utils.dart';
 
 abstract class LogLine {
   int lineNumber;

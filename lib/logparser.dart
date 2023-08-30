@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:chipper/ModEntry.dart';
 import 'package:collection/collection.dart';
 import 'package:fimber/fimber.dart';
 
 import 'AppState.dart';
 import 'ErrorLines.dart';
+import 'ModEntry.dart';
 import 'logging.dart';
 
 class LogParser {

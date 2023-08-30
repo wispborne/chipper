@@ -1,15 +1,15 @@
 import 'dart:ui';
 
-import 'package:chipper/AppState.dart';
-import 'package:chipper/copy.dart';
-import 'package:chipper/selection_transformer.dart';
-import 'package:chipper/utils.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'AppState.dart';
 import 'ErrorLines.dart';
 import 'ModEntry.dart';
+import 'copy.dart';
+import 'selection_transformer.dart';
+import 'utils.dart';
 
 class Readout extends StatelessWidget {
   Readout(LogChips chips, {Key? key}) : super(key: key) {
@@ -33,7 +33,7 @@ class Readout extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     const iconOpacity = 140;
-    const showInfoLogs = false;
+    const showInfoLogs = true;
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       if (_gameVersion != null || _javaVersion != null)

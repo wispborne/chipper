@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:chipper/AppState.dart';
-import 'package:chipper/desktop_drop.dart';
-import 'package:chipper/utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +14,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:window_size/window_size.dart';
 
 import 'AppState.dart' as state;
+import 'AppState.dart';
 import 'config.dart';
 import 'copy.dart';
+import 'desktop_drop.dart';
 import 'logging.dart';
+import 'utils.dart';
 
 const chipperTitle = "Chipper v1.12.0";
 const chipperSubtitle = " by Wisp";
@@ -55,9 +55,10 @@ class _MyAppState extends ConsumerState<MyApp> {
 
     final starsectorLauncher = darkTheme.copyWith(
         colorScheme: darkTheme.colorScheme.copyWith(
-            primary: const Color.fromRGBO(73, 252, 255, 1),
-            secondary: const Color.fromRGBO(59, 203, 232, 1),
-            tertiary: const Color.fromRGBO(0, 255, 255, 1),),
+          primary: const Color.fromRGBO(73, 252, 255, 1),
+          secondary: const Color.fromRGBO(59, 203, 232, 1),
+          tertiary: const Color.fromRGBO(0, 255, 255, 1),
+        ),
         scaffoldBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
         dialogBackgroundColor: const Color.fromRGBO(14, 22, 43, 1));
     final halloween = darkTheme.copyWith(
@@ -70,8 +71,7 @@ class _MyAppState extends ConsumerState<MyApp> {
 
     // Light theme
     var defaultLightTheme = ThemeData.light(useMaterial3: material3);
-    final lightTheme = defaultLightTheme
-    .copyWith(
+    final lightTheme = defaultLightTheme.copyWith(
       colorScheme: defaultLightTheme.colorScheme.copyWith(
           primary: const Color.fromRGBO(73, 252, 255, 1),
           secondary: const Color.fromRGBO(59, 203, 232, 1),
@@ -86,7 +86,7 @@ class _MyAppState extends ConsumerState<MyApp> {
           theme: lightTheme.copyWith(
               textTheme:
                   lightTheme.textTheme.copyWith(bodyMedium: lightTheme.textTheme.bodyMedium?.copyWith(fontSize: 16)),
-          snackBarTheme: const SnackBarThemeData()),
+              snackBarTheme: const SnackBarThemeData()),
           darkTheme: starsectorLauncher.copyWith(
               textTheme:
                   darkTheme.textTheme.copyWith(bodyMedium: darkTheme.textTheme.bodyMedium?.copyWith(fontSize: 16))),
