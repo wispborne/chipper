@@ -110,7 +110,7 @@ class LogParser {
       var chips =
           LogChips(gameVersion, os, javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock));
       Fimber.i("Parsing took ${stopwatch.elapsedMilliseconds} ms");
-      Fimber.i(chips.errorBlock.map((element) => "\n${element.lineNumber}-${element.fullError}").toList().toString());
+      // Fimber.i(chips.errorBlock.map((element) => "\n${element.lineNumber}-${element.fullError}").toList().toString());
       return chips;
     } catch (e, stacktrace) {
       Fimber.e("Parsing failed.", ex: e, stacktrace: stacktrace);

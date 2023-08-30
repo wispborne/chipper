@@ -30,6 +30,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  cupertino_icons: ^1.0.5
   provider: ^6.0.0
   desktop_drop: ^0.4.3
   cross_file: ^0.3.3+2
