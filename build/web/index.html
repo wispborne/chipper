@@ -34,7 +34,7 @@
 
     <script>
     // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = "2399324077";
+    const serviceWorkerVersion = "2047079486";
 
 
 
@@ -51,8 +51,10 @@
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
       _flutter.loader.loadEntrypoint({
+        entrypointUrl: "/main.dart.js", // Wisp: https://stackoverflow.com/questions/74305233/flutter-web-app-not-starting-the-script-has-an-unsupported-mime-type/75335747#75335747
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
+          serviceWorkerUrl: "/flutter_service_worker.js?v=", // Wisp: https://stackoverflow.com/questions/74305233/flutter-web-app-not-starting-the-script-has-an-unsupported-mime-type/75335747#75335747
         }
       }).then(function(engineInitializer) {
         return engineInitializer.initializeEngine();

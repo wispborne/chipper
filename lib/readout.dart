@@ -247,48 +247,13 @@ class ViewPreviousEntryButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
         ),
         preferBelow: false,
-        child: SizedBox(
-            height: 15,
-            width: 20,
-            child: IconButton(
-              onPressed: () {
-                var prevThreadMessage =
-                    _errors.sublist(0, index).lastWhereOrNull((element) => element.isPreviousThreadLine);
-                if (prevThreadMessage == null) return;
-                var snacker = ScaffoldMessenger.of(context);
-                snacker.clearSnackBars();
-                snacker.showSnackBar(SnackBar(
-                  behavior: SnackBarBehavior.floating,
-                  // backgroundColor: theme.colorScheme.surface,
-                  content: SelectionArea(
-                      child: SelectionTransformer.separated(
-                          child: Row(children: [
-                    Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      prevThreadMessage.createLogWidget(context),
-                      _errors[index].createLogWidget(context)
-                    ]),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () => snacker.clearSnackBars(),
-                      icon: const Icon(Icons.close),
-                    ),
-                  ]))),
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(color: theme.colorScheme.onSurface, width: 1),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  duration: const Duration(days: 1),
-                ));
-              },
-              padding: EdgeInsets.zero,
-              splashRadius: 15,
-              icon: Icon(
-                Icons.info_outline_rounded,
-                color: theme.disabledColor,
-              ),
-              iconSize: 15,
-              // tooltip: "View previous entry on this thread.",
-            )));
+        child: Icon(
+          Icons.info_outline_rounded,
+          color: theme.disabledColor,
+          size: 20,
+        )
+        // tooltip: "View previous entry on this thread.",
+        );
   }
 }
 
