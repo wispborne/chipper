@@ -108,13 +108,23 @@ class _DesktopDropState extends ConsumerState<DesktopDrop> {
                             : Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                                 Text(
                                   "Drop starsector.log here",
-                                  style: theme.textTheme.headlineMedium,
+                                  style: theme.textTheme.headlineMedium?.copyWith(fontSize: 34),
                                 ),
+                                Padding(
+                                    padding: const EdgeInsets.only(top: 10),
+                                    child: Text(
+                                      "(nothing leaves your computer)",
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                          fontSize: 16, color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6)),
+                                    )),
+                                Text("\n—",
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                        fontSize: 16, color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6))),
                                 SelectionArea(
                                     child: Text.rich(
                                   TextSpan(children: [
                                     TextSpan(
-                                      text: "\n\nWindows: ",
+                                      text: "\nWindows: ",
                                       style: theme.textTheme.headlineSmall?.copyWith(
                                           fontSize: 20, color: theme.textTheme.headlineSmall?.color?.withOpacity(0.6)),
                                     ),

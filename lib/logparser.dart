@@ -66,14 +66,22 @@ class LogParser {
 
         if (line.contains(errorBlockOpenPattern)) {
           // Travel back up and find the previous log entry on the same thread
-          // Only look max 10 lines up for perf.
           final thread = threadPattern.firstMatch(line)?.group(1);
 
           if (thread != null) {
-            for (var i = (index - 1); i >= 0 && i > (index - 10); i--) {
-              final isLineAlreadyAdded = errorBlock.none((err) => err.lineNumber == i);
-              if (isLineAlreadyAdded && threadPattern.firstMatch(logLines[i])?.group(1) == thread) {
-                errorBlock.add(UnknownLogLine(i + 1, logLines[i], isPreviousThreadLine: true));
+            // Only look max 10 lines up for perf (edit: removed).  `&& i > (index - 10)`
+            // Edit: It didn't affect perf much, but it did cause some INFO lines to be missed.
+            for (var i = (index - 1); i >= 0; i--) {
+              final isLineAlreadyAdded = errorBlock.any((err) => err.lineNumber == (i + 1));
+              if (isLineAlreadyAdded) {
+                break; // If the line's already added, it's an error line, so don't keep looking for an info.
+              }
+
+              if (threadPattern.firstMatch(logLines[i])?.group(1) == thread) {
+                // Create a new logline (which is the prev message on the thread).
+                // Try to parse it as a regular error line, and if that fails, make it an "unknown" one.
+                errorBlock.add((GeneralErrorLogLine.tryCreate(i + 1, logLines[i])?..isPreviousThreadLine = true) ??
+                    UnknownLogLine(i + 1, logLines[i], isPreviousThreadLine: true));
                 break;
               }
             }
@@ -102,6 +110,7 @@ class LogParser {
       var chips =
           LogChips(gameVersion, os, javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock));
       Fimber.i("Parsing took ${stopwatch.elapsedMilliseconds} ms");
+      Fimber.i(chips.errorBlock.map((element) => "\n${element.lineNumber}-${element.fullError}").toList().toString());
       return chips;
     } catch (e, stacktrace) {
       Fimber.e("Parsing failed.", ex: e, stacktrace: stacktrace);

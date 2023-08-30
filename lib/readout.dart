@@ -3,7 +3,10 @@ import 'dart:ui';
 
 import 'package:chipper/AppState.dart';
 import 'package:chipper/copy.dart';
+import 'package:chipper/selection_transformer.dart';
 import 'package:chipper/utils.dart';
+import 'package:collection/collection.dart';
+import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -32,6 +35,7 @@ class Readout extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     const iconOpacity = 140;
+    const showInfoLogs = false;
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       if (_gameVersion != null || _javaVersion != null)
@@ -39,23 +43,23 @@ class Readout extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 10),
             child: SelectionArea(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                      Text("System", style: theme.textTheme.titleLarge),
-                      IconButton(
-                        tooltip: "Copy",
-                        onPressed: () {
-                          Clipboard.setData(ClipboardData(text: createSystemCopyString(_chips)));
-                        },
-                        icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
-                        iconSize: 20,
-                      )
-                    ]),
-                    Text("Starsector: ${_gameVersion!}\nOS: $_os\nJRE: $_javaVersion",
-                        style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240))),
-                  ],
-                ))),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  Text("System", style: theme.textTheme.titleLarge),
+                  IconButton(
+                    tooltip: "Copy",
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: createSystemCopyString(_chips)));
+                    },
+                    icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
+                    iconSize: 20,
+                  )
+                ]),
+                Text("Starsector: ${_gameVersion!}\nOS: $_os\nJRE: $_javaVersion",
+                    style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240))),
+              ],
+            ))),
       if (_mods != null)
         Padding(
             padding: const EdgeInsets.only(bottom: 10),
@@ -117,105 +121,182 @@ class Readout extends StatelessWidget {
       if (_errors != null)
         Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                Text("Errors", style: theme.textTheme.titleLarge),
-                IconButton(
-                  tooltip: "Copy",
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: createErrorsCopyString(_chips)));
-                  },
-                  icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
-                  iconSize: 20,
-                )
-              ]),
-              Expanded(
-                  child: SelectionArea(
+          Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            Text("Errors", style: theme.textTheme.titleLarge),
+            IconButton(
+              tooltip: "Copy",
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: createErrorsCopyString(_chips)));
+              },
+              icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
+              iconSize: 20,
+            )
+          ]),
+          Expanded(
+              child: SelectionArea(
+                  child: SelectionTransformer.tabular(
+                      columns: 2,
                       child: ListView.builder(
                           itemCount: _errors!.length,
                           reverse: true,
                           itemBuilder: (BuildContext context, int index) {
-                            return _errors![index].isPreviousThreadLine
+                            return !showInfoLogs && _errors![index].isPreviousThreadLine
                                 ? Container(
-                              height: 0,
-                            )
+                                    height: 0,
+                                  )
                                 : Column(children: [
-                              if (isConsecutiveWithPreviousLine(index))
-                                Divider(
-                                  color: theme.disabledColor,
-                                ),
-                              Container(
-                                  padding: (isConsecutiveWithPreviousLine(index))
-                                      ? const EdgeInsets.only()
-                                      : const EdgeInsets.only(top: 1, bottom: 1),
-                                  child: IntrinsicHeight(
-                                      child: Row(children: [
-                                        Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-                                          Row(children: [
-                                            if (isConsecutiveWithPreviousLine(index))
-                                              SizedBox(
-                                                  height: 15,
+                                    if (!isConsecutiveWithPreviousLine(index, showInfoLogs))
+                                      Divider(
+                                        color: theme.disabledColor,
+                                      ),
+                                    Container(
+                                        padding: (!isConsecutiveWithPreviousLine(index, showInfoLogs))
+                                            ? const EdgeInsets.only()
+                                            : const EdgeInsets.only(top: 1, bottom: 1),
+                                        child: IntrinsicHeight(
+                                            child: Row(children: [
+                                          Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                                            Row(children: [
+                                              if (!isConsecutiveWithPreviousLine(index, showInfoLogs))
+                                                ViewPreviousEntryButton(
+                                                    errors: _errors ?? [], theme: theme, index: index)
+                                              else
+                                                Container(
                                                   width: 20,
-                                                  child: IconButton(
-                                                    onPressed: () {
-                                                      var snacker = ScaffoldMessenger.of(context);
-                                                      snacker.clearSnackBars();
-                                                      var prevThreadMessage = _errors!
-                                                          .sublist(0, index)
-                                                          .lastWhere((element) => element.isPreviousThreadLine);
-                                                      snacker.showSnackBar(SnackBar(
-                                                        behavior: SnackBarBehavior.floating,
-                                                        content: SelectionArea(
-                                                            child: Row(children: [
-                                                              Column(
-                                                                  mainAxisSize: MainAxisSize.min,
-                                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                                  children: [
-                                                                    prevThreadMessage.createLogWidget(context),
-                                                                    _errors![index].createLogWidget(context)
-                                                                  ]),
-                                                              const Spacer(),
-                                                              IconButton(
-                                                                onPressed: () => snacker.clearSnackBars(),
-                                                                icon: const Icon(Icons.close),
-                                                                color: theme.colorScheme.onInverseSurface,
-                                                              ),
-                                                            ])),
-                                                        duration: const Duration(days: 1),
-                                                      ));
-                                                    },
-                                                    padding: EdgeInsets.zero,
-                                                    splashRadius: 15,
-                                                    icon: Icon(
-                                                      Icons.info_outline_rounded,
-                                                      color: theme.disabledColor,
-                                                    ),
-                                                    iconSize: 15,
-                                                    tooltip: "View previous entry on this thread.",
-                                                  ))
-                                            else
-                                              Container(
-                                                width: 20,
-                                              ),
-                                            Text(
-                                              " ${_errors![index].lineNumber}  ",
-                                              style: TextStyle(
-                                                  color: theme.hintColor.withAlpha(40),
-                                                  fontFeatures: const [FontFeature.tabularFigures()]),
-                                            )
-                                          ])
-                                        ]),
-                                        Expanded(child: _errors![index].createLogWidget(context))
-                                      ])))
-                            ]);
-                          })))
-            ])),
+                                                ),
+                                              Text(
+                                                " ${_errors![index].lineNumber}  ",
+                                                style: TextStyle(
+                                                    color: theme.hintColor.withAlpha(40),
+                                                    fontFeatures: const [FontFeature.tabularFigures()]),
+                                              )
+                                            ])
+                                          ]),
+                                          Expanded(child: _errors![index].createLogWidget(context))
+                                        ])))
+                                  ]);
+                          }))))
+        ])),
     ]);
   }
 
-  bool isConsecutiveWithPreviousLine(int index) {
-    if (index == _errors!.length - 1) return false;
-    return _errors![index].lineNumber - 1 != _errors![index + 1].lineNumber;
+  bool isConsecutiveWithPreviousLine(int index, bool showInfoLogs) {
+    if (index + 1 >= _errors!.length) return false;
+    var left = (_errors![index].lineNumber - 1);
+    var right = _errors![index + 1].lineNumber;
+    return left == right;
   }
+}
+
+class ViewPreviousEntryButton extends StatelessWidget {
+  const ViewPreviousEntryButton({
+    super.key,
+    required List<LogLine> errors,
+    required this.theme,
+    required this.index,
+  }) : _errors = errors;
+
+  final List<LogLine> _errors;
+  final ThemeData theme;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    // Take a list of all lines before this one, then find the last one in the list that is specifically a "previous line" entry..
+    var thisError = _errors[index] is GeneralErrorLogLine ? (_errors[index] as GeneralErrorLogLine) : null;
+    var prevThreadMessage = _errors
+        .sublist(index + 1, _errors.length)
+        .firstWhereOrNull((element) => element is GeneralErrorLogLine ? element.thread == thisError?.thread : true);
+    if (prevThreadMessage == null) return const SizedBox(height: 15, width: 20);
+
+    return Tooltip(
+        richMessage: WidgetSpan(
+            child: Container(
+                padding: const EdgeInsets.all(10),
+                color: theme.colorScheme.surface,
+                child: SelectionArea(
+                  child: SelectionTransformer.separated(
+                      child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    "Previous line on ${thisError?.thread?.replaceFirst('[', '').replaceFirst(']', '') ?? "thread"}",
+                                    style: theme.textTheme.titleMedium),
+                                Row(children: [
+                                  lineNumber(prevThreadMessage.lineNumber, theme),
+                                  prevThreadMessage.createLogWidget(context)
+                                ]),
+                                Opacity(
+                                    opacity: 0.4,
+                                    child: Row(children: [
+                                      lineNumber(_errors[index].lineNumber, theme),
+                                      _errors[index].createLogWidget(context)
+                                    ]))
+                              ]))),
+                  // const Spacer(),
+                  // IconButton(
+                  //   onPressed: () => snacker.clearSnackBars(),
+                  //   icon: const Icon(Icons.close),
+                  // ),
+                ))),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        preferBelow: false,
+        child: SizedBox(
+            height: 15,
+            width: 20,
+            child: IconButton(
+              onPressed: () {
+                var prevThreadMessage =
+                    _errors.sublist(0, index).lastWhereOrNull((element) => element.isPreviousThreadLine);
+                if (prevThreadMessage == null) return;
+                var snacker = ScaffoldMessenger.of(context);
+                snacker.clearSnackBars();
+                snacker.showSnackBar(SnackBar(
+                  behavior: SnackBarBehavior.floating,
+                  // backgroundColor: theme.colorScheme.surface,
+                  content: SelectionArea(
+                      child: SelectionTransformer.separated(
+                          child: Row(children: [
+                    Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      prevThreadMessage.createLogWidget(context),
+                      _errors[index].createLogWidget(context)
+                    ]),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () => snacker.clearSnackBars(),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ]))),
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: theme.colorScheme.onSurface, width: 1),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  duration: const Duration(days: 1),
+                ));
+              },
+              padding: EdgeInsets.zero,
+              splashRadius: 15,
+              icon: Icon(
+                Icons.info_outline_rounded,
+                color: theme.disabledColor,
+              ),
+              iconSize: 15,
+              // tooltip: "View previous entry on this thread.",
+            )));
+  }
+}
+
+Text lineNumber(int lineNumber, ThemeData theme) {
+  return Text(
+    " $lineNumber  ",
+    style: TextStyle(color: theme.hintColor.withAlpha(40), fontFeatures: const [FontFeature.tabularFigures()]),
+  );
 }
 
 class ModsList extends StatelessWidget {
@@ -224,14 +305,10 @@ class ModsList extends StatelessWidget {
   UnmodifiableListView<ModEntry>? mods;
 
   @override
-  Widget build(BuildContext context) =>
-      Column(
+  Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Mods (${mods?.length})", style: Theme
-              .of(context)
-              .textTheme
-              .titleLarge),
+          Text("Mods (${mods?.length})", style: Theme.of(context).textTheme.titleLarge),
           ...mods!.map((e) => e.createWidget(context)).toList()
         ],
       );
