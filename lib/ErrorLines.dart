@@ -76,7 +76,7 @@ class GeneralErrorLogLineWidget extends StatelessWidget {
 }
 
 class StacktraceLogLine extends LogLine {
-  static final RegExp _stacktraceRegex = RegExp("(?<at>at) (?<namespace>.*)\\.(?<method>.*?)\\((?<classAndLine>.*)\\)");
+  static final RegExp _stacktraceRegex = RegExp("(?<at>\\tat) (?<namespace>.*)\\.(?<method>.*?)\\((?<classAndLine>.*)\\)");
 
   String? at;
   String? namespace;
@@ -124,6 +124,7 @@ class StacktraceLogLineWidget extends StatelessWidget {
         softWrap: logLine.shouldWrap,
         style: TextStyle(color: isObf ? obfColor : importantColor.withAlpha(240)),
         TextSpan(children: [
+          TextSpan(text: "    ", style: TextStyle(color: theme.hintColor)),
           TextSpan(text: logLine.at, style: TextStyle(color: theme.hintColor)),
           TextSpan(
               text: logLine.namespace?.prepend(" "),

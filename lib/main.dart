@@ -21,7 +21,7 @@ import 'desktop_drop.dart';
 import 'logging.dart';
 import 'utils.dart';
 
-const chipperTitle = "Chipper v1.12.1";
+const chipperTitle = "Chipper v1.12.2";
 const chipperSubtitle = "A Starsector log viewer";
 
 void main() async {
@@ -87,7 +87,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     return CallbackShortcuts(
         bindings: {const SingleActivator(LogicalKeyboardKey.keyV, control: true): () => pasteLog(ref)},
         child: MaterialApp(
-          title: chipperTitle + chipperSubtitle,
+          title: chipperTitle,
           debugShowCheckedModeBanner: false,
           theme: lightTheme.copyWith(
               textTheme:

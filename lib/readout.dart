@@ -162,12 +162,16 @@ class Readout extends StatelessWidget {
                                                 Container(
                                                   width: 20,
                                                 ),
-                                              Text(
-                                                " ${_errors![index].lineNumber}  ",
-                                                style: TextStyle(
-                                                    color: theme.hintColor.withAlpha(40),
-                                                    fontFeatures: const [FontFeature.tabularFigures()]),
-                                              )
+                                              Container(
+                                                  width: 85,
+                                                  child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                                                    Text(
+                                                      "${_errors![index].lineNumber}    ",
+                                                      style: TextStyle(
+                                                          color: theme.hintColor.withAlpha(40),
+                                                          fontFeatures: const [FontFeature.tabularFigures()]),
+                                                    )
+                                                  ]))
                                             ])
                                           ]),
                                           Expanded(child: _errors![index].createLogWidget(context))
