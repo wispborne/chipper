@@ -105,63 +105,76 @@ class _DesktopDropState extends ConsumerState<DesktopDrop> {
                                   style: theme.textTheme.headlineMedium,
                                 )
                               ])
-                            : Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                Text(
-                                  "Drop starsector.log here",
-                                  style: theme.textTheme.headlineMedium?.copyWith(fontSize: 34),
-                                ),
-                                Padding(
-                                    padding: const EdgeInsets.only(top: 10),
-                                    child: Text(
-                                      "(nothing leaves your computer)",
+                            : Column(children: [
+                                Expanded(
+                                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                                  Text(
+                                    "Drop starsector.log here",
+                                    style: theme.textTheme.headlineMedium?.copyWith(fontSize: 34),
+                                  ),
+                                  Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: Text(
+                                        "or control-v to paste",
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                            fontSize: 18, color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6)),
+                                      )),
+                                  Text("\n—",
                                       style: theme.textTheme.bodyMedium?.copyWith(
-                                          fontSize: 16, color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6)),
-                                    )),
-                                Text("\n—",
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                        fontSize: 16, color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6))),
-                                SelectionArea(
-                                    child: Text.rich(
-                                  TextSpan(children: [
-                                    TextSpan(
-                                      text: "\nWindows: ",
-                                      style: theme.textTheme.headlineSmall?.copyWith(
-                                          fontSize: 20, color: theme.textTheme.headlineSmall?.color?.withOpacity(0.6)),
-                                    ),
-                                    TextSpan(
-                                      text: _winPath,
-                                      style: theme.textTheme.headlineSmall?.copyWith(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 18,
-                                          color: theme.textTheme.headlineSmall?.color?.withOpacity(0.7)),
-                                    ),
-                                    TextSpan(
-                                      text: "\n\nMacOS: ",
-                                      style: theme.textTheme.headlineSmall?.copyWith(
-                                          fontSize: 20, color: theme.textTheme.headlineSmall?.color?.withOpacity(0.6)),
-                                    ),
-                                    TextSpan(
-                                      text: _macPath,
-                                      style: theme.textTheme.headlineSmall?.copyWith(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 18,
-                                          color: theme.textTheme.headlineSmall?.color?.withOpacity(0.7)),
-                                    ),
-                                    TextSpan(
-                                      text: "\n\nLinux: ",
-                                      style: theme.textTheme.headlineSmall?.copyWith(
-                                          fontSize: 20, color: theme.textTheme.headlineSmall?.color?.withOpacity(0.6)),
-                                    ),
-                                    TextSpan(
-                                      text: _linuxPath,
-                                      style: theme.textTheme.headlineSmall?.copyWith(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 18,
-                                          color: theme.textTheme.headlineSmall?.color?.withOpacity(0.7)),
-                                    ),
-                                  ]),
-                                  textAlign: TextAlign.left,
-                                ))
+                                          fontSize: 16, color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6))),
+                                  SelectionArea(
+                                      child: Text.rich(
+                                    TextSpan(children: [
+                                      TextSpan(
+                                        text: "\nWindows: ",
+                                        style: theme.textTheme.headlineSmall?.copyWith(
+                                            fontSize: 20,
+                                            color: theme.textTheme.headlineSmall?.color?.withOpacity(0.6)),
+                                      ),
+                                      TextSpan(
+                                        text: _winPath,
+                                        style: theme.textTheme.headlineSmall?.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 18,
+                                            color: theme.textTheme.headlineSmall?.color?.withOpacity(0.7)),
+                                      ),
+                                      TextSpan(
+                                        text: "\n\nMacOS: ",
+                                        style: theme.textTheme.headlineSmall?.copyWith(
+                                            fontSize: 20,
+                                            color: theme.textTheme.headlineSmall?.color?.withOpacity(0.6)),
+                                      ),
+                                      TextSpan(
+                                        text: _macPath,
+                                        style: theme.textTheme.headlineSmall?.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 18,
+                                            color: theme.textTheme.headlineSmall?.color?.withOpacity(0.7)),
+                                      ),
+                                      TextSpan(
+                                        text: "\n\nLinux: ",
+                                        style: theme.textTheme.headlineSmall?.copyWith(
+                                            fontSize: 20,
+                                            color: theme.textTheme.headlineSmall?.color?.withOpacity(0.6)),
+                                      ),
+                                      TextSpan(
+                                        text: _linuxPath,
+                                        style: theme.textTheme.headlineSmall?.copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 18,
+                                            color: theme.textTheme.headlineSmall?.color?.withOpacity(0.7)),
+                                      ),
+                                    ]),
+                                    textAlign: TextAlign.left,
+                                  )),
+                                ])),
+                                Padding(
+                                    padding: const EdgeInsets.only(top: 30),
+                                    child: Text(
+                                      "Nothing is ever uploaded. All processing is done on your computer.",
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                          fontSize: 14, color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6)),
+                                    ))
                               ])))
                 : Readout(widget.chips!)));
   }

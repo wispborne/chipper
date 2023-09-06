@@ -50,14 +50,15 @@ class SelectionTransformer extends StatefulWidget {
   ///
   SelectionTransformer.tabular({
     super.key,
+    String separator = '\t',
     required int columns,
     required this.child,
-  }) : transform = _tabularSelectionTransform(columns);
+  }) : transform = _tabularSelectionTransform(columns, separator);
 
   static SelectionTransform _separatedSelectionTransform(String separator) =>
           (selections) => selections.join(separator).trim();
 
-  static SelectionTransform _tabularSelectionTransform(int columns) =>
+  static SelectionTransform _tabularSelectionTransform(int columns, String? separator) =>
           (selections) {
         var maxColumnWidths = List.filled(columns - 1, 0);
         for (var (i, s) in selections.indexed) {
@@ -71,7 +72,7 @@ class SelectionTransformer extends StatefulWidget {
         for (var (i, s) in selections.indexed) {
           var j = i % columns;
           if (j < columns - 1) {
-            buffer.write('${s.padRight(maxColumnWidths[j])}\t');
+            buffer.write('${s.padRight(maxColumnWidths[j])}${separator ?? "\t"}');
           } else {
             buffer.write(s);
             if (i < selections.length - 1) {

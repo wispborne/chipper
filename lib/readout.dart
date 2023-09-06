@@ -54,8 +54,14 @@ class Readout extends StatelessWidget {
                     iconSize: 20,
                   )
                 ]),
-                Text("Starsector: ${_gameVersion!}\nOS: $_os\nJRE: $_javaVersion",
-                    style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240))),
+                Text.rich(TextSpan(style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240)), children: [
+                  TextSpan(text: "Starsector: ", style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(190))),
+                  TextSpan(text: _gameVersion, style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240))),
+                  TextSpan(text: "\nJRE: ", style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(190))),
+                  TextSpan(text: _javaVersion, style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240))),
+                  TextSpan(text: "\nOS: ", style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(190))),
+                  TextSpan(text: _os, style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240))),
+                ]))
               ],
             ))),
       if (_mods != null)
@@ -134,6 +140,7 @@ class Readout extends StatelessWidget {
               child: SelectionArea(
                   child: SelectionTransformer.tabular(
                       columns: 2,
+                      separator: " ",
                       child: ListView.builder(
                           itemCount: _errors!.length,
                           reverse: true,

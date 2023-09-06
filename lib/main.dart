@@ -163,8 +163,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                           },
                           tooltip: "Copy all",
                           icon: const Icon(Icons.copy_all)),
-                    IconButton(
-                        onPressed: () => pasteLog(ref), tooltip: "Paste log (Ctrl-V)", icon: const Icon(Icons.paste)),
+                    if (false)
+                      IconButton(
+                          onPressed: () => pasteLog(ref), tooltip: "Paste log (Ctrl-V)", icon: const Icon(Icons.paste)),
                   ]),
                   const Spacer(),
                   Row(mainAxisSize: MainAxisSize.min, children: [
@@ -188,60 +189,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         icon: Icon(AppState.theme.isMaterial3() ? Icons.view_compact : Icons.view_cozy)),
                     IconButton(
                         tooltip: "About Chipper",
-                        onPressed: () => showMyDialog(context,
-                                title: Center(
-                                    child: Column(children: [
-                                  Text(
-                                    chipperTitle,
-                                    style: theme.textTheme.titleLarge?.copyWith(fontSize: 24),
-                                  ),
-                                  Text("A Starsector log viewer", style: theme.textTheme.labelLarge),
-                                  Text("by Wisp", style: theme.textTheme.labelLarge),
-                                  const Divider(),
-                                ])),
-                                body: [
-                                  ConstrainedBox(
-                                      constraints: const BoxConstraints(maxWidth: 600),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            "What's it do?",
-                                            style: theme.textTheme.titleLarge,
-                                          ),
-                                          SizedBox.fromSize(
-                                            size: const Size.fromHeight(5),
-                                          ),
-                                          const Text(
-                                              "Chipper pulls useful information out of the log for easier viewing.\n\nThe first part of troubleshooting Starsector issues is looking through a log file for errors and/or outdated mods."),
-                                          SizedBox.fromSize(
-                                            size: const Size.fromHeight(20),
-                                          ),
-                                          Text(
-                                            "\nWhat do you do with my logs?",
-                                            style: theme.textTheme.titleLarge,
-                                          ),
-                                          SizedBox.fromSize(
-                                            size: const Size.fromHeight(5),
-                                          ),
-                                          const Text(
-                                              "Nothing; I can't see them. Everything is done on your browser. Neither the file nor any part of it are ever sent over the Internet.\n\nI do not collect any analytics except for what Cloudflare, the hosting provider, collects by default, which is all anonymous."),
-                                          SizedBox.fromSize(
-                                            size: const Size.fromHeight(30),
-                                          ),
-                                          Text.rich(TextSpan(children: [
-                                            const TextSpan(text: "\nCreated using Flutter, by Google "),
-                                            TextSpan(
-                                                text: "so it'll probably get discontinued next year.",
-                                                style: theme.textTheme.bodySmall)
-                                          ])),
-                                          Linkify(
-                                            text: "Source Code: https://github.com/wispborne/chipper",
-                                            linkifiers: const [UrlLinkifier()],
-                                            onOpen: (link) => launchUrl(Uri.parse(link.url)),
-                                          ),
-                                        ],
-                                      ))
-                                ]),
+                        onPressed: () => showAboutDialog(context, theme),
                         icon: const Icon(Icons.info))
                   ])
                 ]))),
@@ -281,5 +229,60 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             child: const Icon(Icons.upload_file),
           )), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  Future<void> showAboutDialog(BuildContext context, ThemeData theme) {
+    return showMyDialog(context,
+        title: Center(
+            child: Column(children: [
+          Text(
+            chipperTitle,
+            style: theme.textTheme.titleLarge?.copyWith(fontSize: 24),
+          ),
+          Text("A Starsector log viewer", style: theme.textTheme.labelLarge),
+          Text("by Wisp", style: theme.textTheme.labelLarge),
+          const Divider(),
+        ])),
+        body: [
+          ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: Column(
+                children: [
+                  Text(
+                    "What's it do?",
+                    style: theme.textTheme.titleLarge,
+                  ),
+                  SizedBox.fromSize(
+                    size: const Size.fromHeight(5),
+                  ),
+                  const Text(
+                      "Chipper pulls useful information out of the log for easier viewing.\n\nThe first part of troubleshooting Starsector issues is looking through a log file for errors and/or outdated mods."),
+                  SizedBox.fromSize(
+                    size: const Size.fromHeight(20),
+                  ),
+                  Text(
+                    "\nWhat do you do with my logs?",
+                    style: theme.textTheme.titleLarge,
+                  ),
+                  SizedBox.fromSize(
+                    size: const Size.fromHeight(5),
+                  ),
+                  const Text(
+                      "Nothing; I can't see them. Everything is done on your browser. Neither the file nor any part of it are ever sent over the Internet.\n\nI do not collect any analytics except for what Cloudflare, the hosting provider, collects by default, which is all anonymous."),
+                  SizedBox.fromSize(
+                    size: const Size.fromHeight(30),
+                  ),
+                  Text.rich(TextSpan(children: [
+                    const TextSpan(text: "\nCreated using Flutter, by Google "),
+                    TextSpan(text: "so it'll probably get discontinued next year.", style: theme.textTheme.bodySmall)
+                  ])),
+                  Linkify(
+                    text: "Source Code: https://github.com/wispborne/chipper",
+                    linkifiers: const [UrlLinkifier()],
+                    onOpen: (link) => launchUrl(Uri.parse(link.url)),
+                  ),
+                ],
+              ))
+        ]);
   }
 }
