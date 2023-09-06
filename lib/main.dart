@@ -21,7 +21,7 @@ import 'desktop_drop.dart';
 import 'logging.dart';
 import 'utils.dart';
 
-const chipperTitle = "Chipper v1.12.2";
+const chipperTitle = "Chipper v1.12.3";
 const chipperSubtitle = "A Starsector log viewer";
 
 void main() async {

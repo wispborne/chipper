@@ -169,7 +169,7 @@ class Readout extends StatelessWidget {
                                                 Container(
                                                   width: 20,
                                                 ),
-                                              Container(
+                                              SizedBox(
                                                   width: 85,
                                                   child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                                                     Text(
