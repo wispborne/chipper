@@ -13,6 +13,7 @@ import 'package:platform_info/platform_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:window_size/window_size.dart';
 
+import 'AboutView.dart';
 import 'AppState.dart' as state;
 import 'AppState.dart';
 import 'config.dart';
@@ -21,7 +22,9 @@ import 'desktop_drop.dart';
 import 'logging.dart';
 import 'utils.dart';
 
-const chipperTitle = "Chipper v1.12.3";
+const chipperTitle = "Chipper";
+const chipperVersion = "1.13.0";
+const chipperTitleAndVersion = "$chipperTitle v$chipperVersion";
 const chipperSubtitle = "A Starsector log viewer";
 
 void main() async {
@@ -29,7 +32,7 @@ void main() async {
   Hive.init("chipper.config");
   box = await Hive.openBox("chipperTheme");
   runApp(const ProviderScope(child: MyApp()));
-  setWindowTitle(chipperTitle);
+  setWindowTitle(chipperTitleAndVersion);
 }
 
 class MyApp extends ConsumerStatefulWidget {
@@ -87,7 +90,7 @@ class _MyAppState extends ConsumerState<MyApp> {
     return CallbackShortcuts(
         bindings: {const SingleActivator(LogicalKeyboardKey.keyV, control: true): () => pasteLog(ref)},
         child: MaterialApp(
-          title: chipperTitle,
+          title: chipperTitleAndVersion,
           debugShowCheckedModeBanner: false,
           theme: lightTheme.copyWith(
               textTheme:
@@ -97,7 +100,7 @@ class _MyAppState extends ConsumerState<MyApp> {
               textTheme:
                   darkTheme.textTheme.copyWith(bodyMedium: darkTheme.textTheme.bodyMedium?.copyWith(fontSize: 16))),
           themeMode: AppState.theme.currentTheme(),
-          home: const MyHomePage(title: chipperTitle, subTitle: chipperSubtitle),
+          home: const MyHomePage(title: chipperTitleAndVersion, subTitle: chipperSubtitle),
         ));
   }
 }
@@ -189,7 +192,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         icon: Icon(AppState.theme.isMaterial3() ? Icons.view_compact : Icons.view_cozy)),
                     IconButton(
                         tooltip: "About Chipper",
-                        onPressed: () => showAboutDialog(context, theme),
+                        onPressed: () => showChipperAboutDialog(context, theme),
                         icon: const Icon(Icons.info))
                   ])
                 ]))),
@@ -229,60 +232,5 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             child: const Icon(Icons.upload_file),
           )), // This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
-
-  Future<void> showAboutDialog(BuildContext context, ThemeData theme) {
-    return showMyDialog(context,
-        title: Center(
-            child: Column(children: [
-          Text(
-            chipperTitle,
-            style: theme.textTheme.titleLarge?.copyWith(fontSize: 24),
-          ),
-          Text("A Starsector log viewer", style: theme.textTheme.labelLarge),
-          Text("by Wisp", style: theme.textTheme.labelLarge),
-          const Divider(),
-        ])),
-        body: [
-          ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 600),
-              child: Column(
-                children: [
-                  Text(
-                    "What's it do?",
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  SizedBox.fromSize(
-                    size: const Size.fromHeight(5),
-                  ),
-                  const Text(
-                      "Chipper pulls useful information out of the log for easier viewing.\n\nThe first part of troubleshooting Starsector issues is looking through a log file for errors and/or outdated mods."),
-                  SizedBox.fromSize(
-                    size: const Size.fromHeight(20),
-                  ),
-                  Text(
-                    "\nWhat do you do with my logs?",
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  SizedBox.fromSize(
-                    size: const Size.fromHeight(5),
-                  ),
-                  const Text(
-                      "Nothing; I can't see them. Everything is done on your browser. Neither the file nor any part of it are ever sent over the Internet.\n\nI do not collect any analytics except for what Cloudflare, the hosting provider, collects by default, which is all anonymous."),
-                  SizedBox.fromSize(
-                    size: const Size.fromHeight(30),
-                  ),
-                  Text.rich(TextSpan(children: [
-                    const TextSpan(text: "\nCreated using Flutter, by Google "),
-                    TextSpan(text: "so it'll probably get discontinued next year.", style: theme.textTheme.bodySmall)
-                  ])),
-                  Linkify(
-                    text: "Source Code: https://github.com/wispborne/chipper",
-                    linkifiers: const [UrlLinkifier()],
-                    onOpen: (link) => launchUrl(Uri.parse(link.url)),
-                  ),
-                ],
-              ))
-        ]);
   }
 }

@@ -9,11 +9,14 @@ import 'ModEntry.dart';
 import 'logging.dart';
 
 class LogParser {
+  final gameVersionContains = " - Starting Starsector ";
   final gameVersionRegex = RegExp(" - Starting Starsector (.*?) launcher");
+  final osContains = "  - OS: ";
   final osRegex = RegExp("  - OS: *(.*)");
-  final modBlockOpenRegex = "Running with the following mods";
-  final modBlockEndPattern = "Mod list finished";
+  final javaVersionContains = "Java version: ";
   final javaVersionRegex = RegExp(".*Java version: *(.*)");
+  final modBlockOpenPattern = "Running with the following mods";
+  final modBlockEndPattern = "Mod list finished";
   final errorBlockOpenPattern = "ERROR";
   final errorBlockClosePatterns = ["[Thread-", "[main]", " INFO "];
   final threadPattern = RegExp("\\d+ \\[(.*?)\\] .+");
@@ -37,14 +40,17 @@ class LogParser {
       logLines
           // .transform(splitter)
           .forEachIndexed((index, line) {
-        if (gameVersion == null && gameVersionRegex.hasMatch(line)) {
+        Fimber.v("Parsing line $index: $line");
+
+        // Do `.contains` checks as a rough filter before doing a full regex match because contains is much faster.
+        // Parsing a long filter without a game version, OS, or java version took 37s without this optimization and 5s with it.
+        if (gameVersion == null && line.contains(gameVersionContains) && gameVersionRegex.hasMatch(line)) {
           gameVersion = gameVersionRegex.firstMatch(line)?.group(1);
         }
-        if (os == null && osRegex.hasMatch(line)) {
+        if (os == null && line.contains(osContains) && osRegex.hasMatch(line)) {
           os = osRegex.firstMatch(line)?.group(1);
         }
-
-        if (javaVersion == null && javaVersionRegex.hasMatch(line)) {
+        if (javaVersion == null && line.contains(javaVersionContains) && javaVersionRegex.hasMatch(line)) {
           javaVersion = javaVersionRegex.firstMatch(line)?.group(1);
         }
 
@@ -55,7 +61,8 @@ class LogParser {
         if (isReadingModList) {
           modList.add(ModEntry.tryCreate(line));
         }
-        if (line.contains(modBlockOpenRegex)) {
+
+        if (line.contains(modBlockOpenPattern)) {
           isReadingModList = true;
           modList.clear(); // If we found the start of a modlist block, wipe any previous, older one.
         }
@@ -69,6 +76,7 @@ class LogParser {
           final thread = threadPattern.firstMatch(line)?.group(1);
 
           if (thread != null) {
+            Fimber.d("Looking for previous log entry for line '$line'.");
             // Only look max 10 lines up for perf (edit: removed).  `&& i > (index - 10)`
             // Edit: It didn't affect perf much, but it did cause some INFO lines to be missed.
             for (var i = (index - 1); i >= 0; i--) {
@@ -85,6 +93,8 @@ class LogParser {
                 break;
               }
             }
+
+            Fimber.d("Found it.");
           }
 
           isReadingError = true;
@@ -110,7 +120,7 @@ class LogParser {
       var chips =
           LogChips(gameVersion, os, javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock));
       Fimber.i("Parsing took ${stopwatch.elapsedMilliseconds} ms");
-      // Fimber.i(chips.errorBlock.map((element) => "\n${element.lineNumber}-${element.fullError}").toList().toString());
+      Fimber.v(chips.errorBlock.map((element) => "\n${element.lineNumber}-${element.fullError}").toList().toString());
       return chips;
     } catch (e, stacktrace) {
       Fimber.e("Parsing failed.", ex: e, stacktrace: stacktrace);
