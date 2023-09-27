@@ -23,7 +23,7 @@ import 'logging.dart';
 import 'utils.dart';
 
 const chipperTitle = "Chipper";
-const chipperVersion = "1.13.0";
+const chipperVersion = "1.13.1";
 const chipperTitleAndVersion = "$chipperTitle v$chipperVersion";
 const chipperSubtitle = "A Starsector log viewer";
 

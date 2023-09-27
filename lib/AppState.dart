@@ -32,6 +32,7 @@ class LogChips {
   final String? javaVersion;
   UnmodifiableListView<ModEntry> modList = UnmodifiableListView([]);
   UnmodifiableListView<LogLine> errorBlock = UnmodifiableListView([]);
+  final int timeTaken;
 
-  LogChips(this.gameVersion, this.os, this.javaVersion, this.modList, this.errorBlock);
+  LogChips(this.gameVersion, this.os, this.javaVersion, this.modList, this.errorBlock, this.timeTaken);
 }

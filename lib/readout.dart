@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 import 'AppState.dart';
 import 'ErrorLines.dart';
@@ -52,7 +53,12 @@ class Readout extends StatelessWidget {
                     },
                     icon: Icon(Icons.copy, color: theme.iconTheme.color?.withAlpha(iconOpacity)),
                     iconSize: 20,
-                  )
+                  ),
+                  Expanded(
+                      child: Text("log chipped in ${NumberFormat.decimalPattern().format(_chips.timeTaken)}ms",
+                          style: theme.textTheme.labelSmall
+                              ?.copyWith(color: theme.textTheme.labelSmall?.color?.withAlpha(120)),
+                          textAlign: TextAlign.right))
                 ]),
                 Text.rich(TextSpan(style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240)), children: [
                   TextSpan(text: "Starsector: ", style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(190))),
