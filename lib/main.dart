@@ -93,7 +93,7 @@ class _MyAppState extends ConsumerState<MyApp> {
               textTheme:
                   lightTheme.textTheme.copyWith(bodyMedium: lightTheme.textTheme.bodyMedium?.copyWith(fontSize: 16)),
               snackBarTheme: const SnackBarThemeData()),
-          darkTheme: starsectorLauncher.copyWith(
+          darkTheme: halloween.copyWith(
               textTheme:
                   darkTheme.textTheme.copyWith(bodyMedium: darkTheme.textTheme.bodyMedium?.copyWith(fontSize: 16))),
           themeMode: AppState.theme.currentTheme(),
