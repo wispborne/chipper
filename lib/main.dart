@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Chipper/MyTheme.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_color/flutter_color.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:platform_info/platform_info.dart';
@@ -53,35 +53,33 @@ class _MyAppState extends ConsumerState<MyApp> {
     var material3 = AppState.theme.isMaterial3();
     var darkTheme = ThemeData(brightness: Brightness.dark, useMaterial3: material3);
 
-    const starsectorPrimaryColor = Color.fromRGBO(73, 252, 255, 1);
-    final starsectorLauncher = darkTheme.copyWith(
-        colorScheme: darkTheme.colorScheme.copyWith(
-          primary: starsectorPrimaryColor,
-          secondary: const Color.fromRGBO(59, 203, 232, 1),
-          tertiary: const Color.fromRGBO(0, 255, 255, 1),
-        ),
-        scaffoldBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
-        dialogBackgroundColor: const Color.fromRGBO(14, 22, 43, 1),
-        cardColor: const Color.fromRGBO(37, 44, 65, 1),
-        appBarTheme: darkTheme.appBarTheme.copyWith(backgroundColor: const Color.fromRGBO(32, 41, 65, 1.0)),
-        floatingActionButtonTheme: darkTheme.floatingActionButtonTheme
-            .copyWith(backgroundColor: starsectorPrimaryColor, foregroundColor: darkTheme.colorScheme.surface));
+    var swatch = switch (DateTime.now().month) {
+      DateTime.october => HalloweenSwatch(),
+      DateTime.december => XmasSwatch(),
+      _ => StarsectorSwatch()
+    };
 
-    final halloween = darkTheme.copyWith(
+    final theme = darkTheme.copyWith(
         colorScheme: darkTheme.colorScheme.copyWith(
-            primary: HexColor("#FF0000"),
-            secondary: HexColor("#FF4D00").lighter(10),
-            tertiary: HexColor("#FF4D00").lighter(20)),
-        scaffoldBackgroundColor: HexColor("#272121"),
-        dialogBackgroundColor: HexColor("#272121"));
+          primary: swatch.primary,
+          secondary: swatch.secondary,
+          tertiary: swatch.tertiary,
+        ),
+        scaffoldBackgroundColor: swatch.background,
+        dialogBackgroundColor: swatch.background,
+        cardColor: swatch.card,
+        appBarTheme: darkTheme.appBarTheme.copyWith(backgroundColor: swatch.card),
+        floatingActionButtonTheme: darkTheme.floatingActionButtonTheme
+            .copyWith(backgroundColor: swatch.primary, foregroundColor: darkTheme.colorScheme.surface));
 
     // Light theme
+    var starsectorSwatch = StarsectorSwatch();
     var defaultLightTheme = ThemeData.light(useMaterial3: material3);
     final lightTheme = defaultLightTheme.copyWith(
       colorScheme: defaultLightTheme.colorScheme.copyWith(
-          primary: starsectorPrimaryColor,
-          secondary: const Color.fromRGBO(59, 203, 232, 1),
-          tertiary: const Color.fromRGBO(0, 255, 255, 1)),
+          primary: starsectorSwatch.primary,
+          secondary: starsectorSwatch.secondary,
+          tertiary: starsectorSwatch.tertiary),
     );
 
     return CallbackShortcuts(
@@ -93,7 +91,7 @@ class _MyAppState extends ConsumerState<MyApp> {
               textTheme:
                   lightTheme.textTheme.copyWith(bodyMedium: lightTheme.textTheme.bodyMedium?.copyWith(fontSize: 16)),
               snackBarTheme: const SnackBarThemeData()),
-          darkTheme: halloween.copyWith(
+          darkTheme: theme.copyWith(
               textTheme:
                   darkTheme.textTheme.copyWith(bodyMedium: darkTheme.textTheme.bodyMedium?.copyWith(fontSize: 16))),
           themeMode: AppState.theme.currentTheme(),

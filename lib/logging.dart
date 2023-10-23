@@ -5,7 +5,7 @@ import 'package:platform_info/platform_info.dart';
 void initLogging({bool printPlatformInfo = false}) {
   Fimber.clearAll();
   if (kDebugMode) {
-    Fimber.plantTree(DebugTree.elapsed(logLevels: ["V", "D", "I", "W", "E"], useColors: true));
+    Fimber.plantTree(DebugTree.elapsed(logLevels: ["D", "I", "W", "E"], useColors: true));
   } else {
     Fimber.plantTree(DebugTree.elapsed(logLevels: ["I", "W", "E"], useColors: true));
   }
