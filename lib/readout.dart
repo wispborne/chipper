@@ -4,6 +4,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
 
 import 'AppState.dart';
 import 'ErrorLines.dart';
@@ -55,9 +56,21 @@ class Readout extends StatelessWidget {
                     iconSize: 20,
                   ),
                   Expanded(
-                      child: Text("log chipped in ${NumberFormat.decimalPattern().format(_chips.timeTaken)}ms",
-                          style: theme.textTheme.labelSmall
-                              ?.copyWith(color: theme.textTheme.labelSmall?.color?.withAlpha(120)),
+                      child: Text.rich(
+                          TextSpan(
+                              style: theme.textTheme.labelSmall
+                                  ?.copyWith(color: theme.textTheme.labelSmall?.color?.withAlpha(120)),
+                              children: [
+                                _chips.filename == null
+                                    ? const TextSpan(text: "log")
+                                    : TextSpan(
+                                        text: basename(_chips.filename!),
+                                        style: TextStyle(
+                                            color: theme.textTheme.labelSmall?.color?.withAlpha(200),
+                                            fontWeight: FontWeight.w500)),
+                                TextSpan(
+                                    text: " chipped in ${NumberFormat.decimalPattern().format(_chips.timeTaken)}ms"),
+                              ]),
                           textAlign: TextAlign.right))
                 ]),
                 Text.rich(TextSpan(style: TextStyle(color: theme.colorScheme.onSurface.withAlpha(240)), children: [

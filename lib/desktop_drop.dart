@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:cross_file/cross_file.dart';
@@ -42,8 +43,8 @@ class _DesktopDropState extends ConsumerState<DesktopDrop> {
         Fimber.i("Parsing true");
         _parsing = true;
       });
-      compute(handleNewLogContent, value).then((chips) {
-        AppState.loadedLog.chips = chips;
+      compute(handleNewLogContent, value.contents).then((LogChips? chips) {
+        AppState.loadedLog.chips = chips?..filename = value.filename;
         setState(() {
           Fimber.i("Parsing false");
           _parsing = false;
@@ -56,8 +57,10 @@ class _DesktopDropState extends ConsumerState<DesktopDrop> {
           Fimber.i('onDragDone:');
 
           final filePath = detail.files.map((e) => e.path).first;
-          _handleDroppedFile(filePath)
-              .then((content) => ref.read(state.logRawContents.notifier).update((state) => content));
+          _handleDroppedFile(filePath).then((content) {
+            if (content == null) return ref.read(state.logRawContents.notifier);
+            return ref.read(state.logRawContents.notifier).update((state) => LogFile(filePath, content));
+          });
         },
         onDragUpdated: (details) {
           setState(() {
@@ -225,7 +228,7 @@ Future<String?> _handleDroppedFile(String droppedFilePaths) async {
   return logStream;
 }
 
-Future handleNewLogContent(String logContent) {
+Future<LogChips?> handleNewLogContent(String logContent) {
   // final wrongLogRegex = RegExp(".*\.log\./d", caseSensitive: false);
   return LogParser().parse(logContent);
 }

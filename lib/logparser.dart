@@ -119,7 +119,7 @@ class LogParser {
 
       var elapsedMilliseconds = stopwatch.elapsedMilliseconds;
       var chips =
-          LogChips(gameVersion, os, javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock), elapsedMilliseconds);
+          LogChips(null, gameVersion, os, javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock), elapsedMilliseconds);
       Fimber.i("Parsing took $elapsedMilliseconds ms");
       Fimber.v(chips.errorBlock.map((element) => "\n${element.lineNumber}-${element.fullError}").toList().toString());
       return chips;

@@ -1,4 +1,3 @@
-import 'package:Chipper/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,7 +8,7 @@ void showChipperAboutDialog(BuildContext context, ThemeData theme) {
   showAboutDialog(
       context: context,
       applicationName: chipperTitleAndVersion,
-      applicationVersion: "${chipperSubtitle}\nby Wisp",
+      applicationVersion: "$chipperSubtitle\nby Wisp",
       applicationIcon: Image.asset(
         "assets/icon.png",
         width: 72,

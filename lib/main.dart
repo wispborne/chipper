@@ -6,11 +6,9 @@ import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_color/flutter_color.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:platform_info/platform_info.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:window_size/window_size.dart';
 
 import 'AboutView.dart';
@@ -20,10 +18,9 @@ import 'config.dart';
 import 'copy.dart';
 import 'desktop_drop.dart';
 import 'logging.dart';
-import 'utils.dart';
 
 const chipperTitle = "Chipper";
-const chipperVersion = "1.13.1";
+const chipperVersion = "1.13.2";
 const chipperTitleAndVersion = "$chipperTitle v$chipperVersion";
 const chipperSubtitle = "A Starsector log viewer";
 
@@ -109,7 +106,13 @@ Future<void> pasteLog(WidgetRef ref) async {
   var clipboardData = (await Clipboard.getData(Clipboard.kTextPlain))?.text;
 
   if (clipboardData?.isNotEmpty == true) {
-    ref.read(state.logRawContents.notifier).update((state) => clipboardData);
+    ref.read(state.logRawContents.notifier).update((state) {
+      if (clipboardData == null) {
+        return null;
+      } else {
+        LogFile(null, clipboardData);
+      }
+    });
   }
 }
 
@@ -215,11 +218,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
                   if (Platform.I.isWeb) {
                     final content = utf8.decode(file.bytes!.toList(), allowMalformed: true);
-                    ref.read(state.logRawContents.notifier).update((state) => content);
+                    ref.read(state.logRawContents.notifier).update((state) => LogFile(file.path, content));
                   } else {
-                    ref
-                        .read(state.logRawContents.notifier)
-                        .update((state) => utf8.decode(File(file.path!).readAsBytesSync(), allowMalformed: true));
+                    ref.read(state.logRawContents.notifier).update((state) =>
+                        LogFile(file.path, utf8.decode(File(file.path!).readAsBytesSync(), allowMalformed: true)));
                   }
                 } else {
                   Fimber.w("Error reading file! $result");

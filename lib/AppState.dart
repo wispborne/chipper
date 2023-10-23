@@ -13,7 +13,7 @@ class AppState {
   static MyTheme theme = MyTheme();
 }
 
-final logRawContents = StateProvider<String?>((ref) => null);
+final logRawContents = StateProvider<LogFile?>((ref) => null);
 
 class LoadedLog extends ChangeNotifier {
   LogChips? _chips;
@@ -26,7 +26,15 @@ class LoadedLog extends ChangeNotifier {
   }
 }
 
+class LogFile {
+  final String? filename;
+  final String contents;
+
+  LogFile(this.filename, this.contents);
+}
+
 class LogChips {
+  String? filename;
   final String? gameVersion;
   final String? os;
   final String? javaVersion;
@@ -34,5 +42,5 @@ class LogChips {
   UnmodifiableListView<LogLine> errorBlock = UnmodifiableListView([]);
   final int timeTaken;
 
-  LogChips(this.gameVersion, this.os, this.javaVersion, this.modList, this.errorBlock, this.timeTaken);
+  LogChips(this.filename, this.gameVersion, this.os, this.javaVersion, this.modList, this.errorBlock, this.timeTaken);
 }
