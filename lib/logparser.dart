@@ -1,12 +1,13 @@
 import 'dart:convert';
 
+import 'package:Chipper/models/user_mods.dart';
 import 'package:collection/collection.dart';
 import 'package:fimber/fimber.dart';
 
-import 'AppState.dart';
-import 'ErrorLines.dart';
-import 'ModEntry.dart';
+import 'app_state.dart';
 import 'logging.dart';
+import 'models/error_lines.dart';
+import 'models/mod_entry.dart';
 
 class LogParser {
   final gameVersionContains = " - Starting Starsector ";
@@ -20,9 +21,12 @@ class LogParser {
   final errorBlockOpenPattern = "ERROR";
   final errorBlockClosePatterns = ["[Thread-", "[main]", " INFO "];
   final threadPattern = RegExp("\\d+ \\[(.*?)\\] .+");
+  final poorMansModListContains = "Loading CSV data from ";
+  final poorMansModListRegex = RegExp("\\\\(?<modname>[^\\\\]+)]\$");
 
   final modList = List<ModEntry>.empty(growable: true);
   final errorBlock = List<LogLine>.empty(growable: true);
+  final poorMansModList = List<ModEntry>.empty(growable: true);
 
   Future<LogChips?> parse(String stream) async {
     initLogging(); // Needed because isolate has its own memory.
@@ -56,6 +60,7 @@ class LogParser {
 
         if (line.contains(modBlockEndPattern)) {
           isReadingModList = false;
+          Fimber.i("Modlist: ${modList.join("\n")}");
         }
 
         if (isReadingModList) {
@@ -64,6 +69,7 @@ class LogParser {
 
         if (line.contains(modBlockOpenPattern)) {
           isReadingModList = true;
+          Fimber.i("Found modlist block at line $index.");
           modList.clear(); // If we found the start of a modlist block, wipe any previous, older one.
         }
 
@@ -100,6 +106,14 @@ class LogParser {
           isReadingError = true;
         }
 
+        // If there's no "enabled mods" block that is found right after app launch, add mod names that are found elsewhere.
+        if (modList.isEmpty && line.contains(poorMansModListContains)) {
+          var modEntry = ModEntry(poorMansModListRegex.firstMatch(line)?.group(1), null, null);
+          if (modEntry.modName != null && poorMansModList.none((it) => it.modName == modEntry.modName)) {
+            poorMansModList.add(modEntry);
+          }
+        }
+
         if (isReadingError) {
           final err = (StacktraceLogLine.tryCreate(index + 1, line));
           if (err != null) {
@@ -117,9 +131,14 @@ class LogParser {
 
       // javaVersion ??= "(no java version in log)";
 
+      var userMods = modList.isNotEmpty
+          ? UserMods(UnmodifiableListView(modList), isPerfectList: true)
+          : UserMods(UnmodifiableListView(poorMansModList..sortBy((element) => element.modName!)),
+              isPerfectList: false);
+
       var elapsedMilliseconds = stopwatch.elapsedMilliseconds;
       var chips =
-          LogChips(null, gameVersion, os, javaVersion, UnmodifiableListView(modList), UnmodifiableListView(errorBlock), elapsedMilliseconds);
+          LogChips(null, gameVersion, os, javaVersion, userMods, UnmodifiableListView(errorBlock), elapsedMilliseconds);
       Fimber.i("Parsing took $elapsedMilliseconds ms");
       Fimber.v(chips.errorBlock.map((element) => "\n${element.lineNumber}-${element.fullError}").toList().toString());
       return chips;

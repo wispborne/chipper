@@ -11,16 +11,16 @@ import 'package:hive/hive.dart';
 import 'package:platform_info/platform_info.dart';
 import 'package:window_size/window_size.dart';
 
-import 'AboutView.dart';
-import 'AppState.dart' as state;
-import 'AppState.dart';
+import 'views/about_view.dart';
+import 'app_state.dart' as state;
+import 'app_state.dart';
 import 'config.dart';
 import 'copy.dart';
-import 'desktop_drop.dart';
+import 'views/desktop_drop_view.dart';
 import 'logging.dart';
 
 const chipperTitle = "Chipper";
-const chipperVersion = "1.13.2";
+const chipperVersion = "1.14.0";
 const chipperTitleAndVersion = "$chipperTitle v$chipperVersion";
 const chipperSubtitle = "A Starsector log viewer";
 
