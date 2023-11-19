@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:Chipper/MyTheme.dart';
 import 'package:file_picker/file_picker.dart';
@@ -11,16 +10,16 @@ import 'package:hive/hive.dart';
 import 'package:platform_info/platform_info.dart';
 import 'package:window_size/window_size.dart';
 
-import 'views/about_view.dart';
 import 'app_state.dart' as state;
 import 'app_state.dart';
 import 'config.dart';
 import 'copy.dart';
-import 'views/desktop_drop_view.dart';
 import 'logging.dart';
+import 'views/about_view.dart';
+import 'views/desktop_drop_view.dart';
 
 const chipperTitle = "Chipper";
-const chipperVersion = "1.14.0";
+const chipperVersion = "1.14.1";
 const chipperTitleAndVersion = "$chipperTitle v$chipperVersion";
 const chipperSubtitle = "A Starsector log viewer";
 
@@ -216,10 +215,10 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
 
                   if (Platform.I.isWeb) {
                     final content = utf8.decode(file.bytes!.toList(), allowMalformed: true);
-                    ref.read(state.logRawContents.notifier).update((state) => LogFile(file.path, content));
+                    ref.read(state.logRawContents.notifier).update((state) => LogFile(file.name, content));
                   } else {
-                    ref.read(state.logRawContents.notifier).update((state) =>
-                        LogFile(file.path, utf8.decode(File(file.path!).readAsBytesSync(), allowMalformed: true)));
+                    final content = utf8.decode(file.bytes!.toList(), allowMalformed: true);
+                    ref.read(state.logRawContents.notifier).update((state) => LogFile(file.name, content));
                   }
                 } else {
                   Fimber.w("Error reading file! $result");

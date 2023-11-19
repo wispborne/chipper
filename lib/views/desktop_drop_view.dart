@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:cross_file/cross_file.dart';
@@ -13,8 +12,8 @@ import 'package:http/http.dart' as http;
 import '../app_state.dart' as state;
 import '../app_state.dart';
 import '../logparser.dart';
-import 'readout.dart';
 import '../utils.dart';
+import 'readout.dart';
 
 class DesktopDrop extends ConsumerStatefulWidget {
   const DesktopDrop({super.key, this.chips});
@@ -56,10 +55,11 @@ class _DesktopDropState extends ConsumerState<DesktopDrop> {
         onDragDone: (detail) {
           Fimber.i('onDragDone:');
 
-          final filePath = detail.files.map((e) => e.path).first;
+          var file = detail.files.first;
+          final filePath = file.path;
           _handleDroppedFile(filePath).then((content) {
             if (content == null) return ref.read(state.logRawContents.notifier);
-            return ref.read(state.logRawContents.notifier).update((state) => LogFile(filePath, content));
+            return ref.read(state.logRawContents.notifier).update((state) => LogFile(file.name, content));
           });
         },
         onDragUpdated: (details) {
