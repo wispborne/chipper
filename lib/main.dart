@@ -19,7 +19,7 @@ import 'views/about_view.dart';
 import 'views/desktop_drop_view.dart';
 
 const chipperTitle = "Chipper";
-const chipperVersion = "1.14.1";
+const chipperVersion = "1.14.2";
 const chipperTitleAndVersion = "$chipperTitle v$chipperVersion";
 const chipperSubtitle = "A Starsector log viewer";
 

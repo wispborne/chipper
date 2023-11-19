@@ -92,7 +92,7 @@ class Readout extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(crossAxisAlignment: CrossAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
-                  if (!_isPerfectList)
+                  if (!_isPerfectList && _mods?.isNotEmpty == true)
                     Tooltip(
                         message: "This list may be incomplete.\n\"Running with the following mods\" block not found in log.",
                         child: Padding(
