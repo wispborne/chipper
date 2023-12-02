@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Chipper/MyTheme.dart';
+import 'package:Chipper/views/lights.dart';
 import 'package:Chipper/views/wavy_painter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fimber/fimber.dart';
@@ -197,13 +198,19 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         icon: const Icon(Icons.info))
                   ])
                 ]))),
-        WavyLineWidget(color: theme.colorScheme.primary, ),
+        WavyLineWidget(
+          color: theme.colorScheme.primary,
+        ),
         Expanded(
             child: SizedBox(
-                width: double.infinity,
-                child: DesktopDrop(
-                  chips: chips,
-                )))
+          width: double.infinity,
+          child: Stack(children: [
+            DesktopDrop(
+              chips: chips,
+            ),
+            const IgnorePointer(child: ChristmasLights())
+          ]),
+        ))
       ]),
       floatingActionButton: Padding(
           padding: const EdgeInsets.only(right: 20),
