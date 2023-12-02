@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:Chipper/MyTheme.dart';
+import 'package:Chipper/views/wavy_painter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fimber/fimber.dart';
 import 'package:flutter/material.dart';
@@ -196,6 +197,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         icon: const Icon(Icons.info))
                   ])
                 ]))),
+        WavyLineWidget(color: theme.colorScheme.primary, ),
         Expanded(
             child: SizedBox(
                 width: double.infinity,
