@@ -202,15 +202,14 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           color: theme.colorScheme.primary,
         ),
         Expanded(
-            child: SizedBox(
-          width: double.infinity,
-          child: Stack(children: [
-            DesktopDrop(
-              chips: chips,
-            ),
-            const IgnorePointer(child: ChristmasLights())
-          ]),
-        ))
+            child: Stack(children: [
+          SizedBox(
+              width: double.infinity,
+              child: DesktopDrop(
+                chips: chips,
+              )),
+          const IgnorePointer(child: ChristmasLights())
+        ]))
       ]),
       floatingActionButton: Padding(
           padding: const EdgeInsets.only(right: 20),

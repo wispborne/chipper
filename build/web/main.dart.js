@@ -46811,7 +46811,7 @@ if(p.w!=null)s.push(A.jn(o,B.DR,o,new A.amc(p),o,"Copy all"))
 s=A.fu(s,B.U,B.A,B.bl)
 $.wf()
 q=A.jn(o,A.jm(($.tv?B.fP:B.xG)===B.fP?B.DJ:B.DB,o,o,o,o),o,new A.amd(),o,"Switch theme")
-return A.ac6(o,A.dm(A.a([A.H_(o,o,!0,o,o,1,o,o,o,!1,o,!1,o,o,o,o,!0,o,o,o,o,o,new A.bQ(B.CM,A.fu(A.a([s,B.Mf,A.fu(A.a([q,A.jn(o,A.jm($.tw?B.DG:B.DK,o,o,o,o),o,new A.ame(),o,"Switch density"),A.jn(o,B.DO,o,new A.amf(a,n),o,"About Chipper")],r),B.U,B.A,B.bl)],r),B.U,B.A,B.O),o),o,o,70,1,o),new A.Pw(n.ax.b,o),A.oF(A.iA(A.nh(B.cZ,A.a([new A.xy(p.w,o),B.DS],r),B.a2,B.cj),o,1/0),1)],r),B.U,B.A,B.O),new A.bQ(B.CE,A.axS(B.DP,!1,new A.amg(p),"Upload log file"),o),o)}}
+return A.ac6(o,A.dm(A.a([A.H_(o,o,!0,o,o,1,o,o,o,!1,o,!1,o,o,o,o,!0,o,o,o,o,o,new A.bQ(B.CM,A.fu(A.a([s,B.Mf,A.fu(A.a([q,A.jn(o,A.jm($.tw?B.DG:B.DK,o,o,o,o),o,new A.ame(),o,"Switch density"),A.jn(o,B.DO,o,new A.amf(a,n),o,"About Chipper")],r),B.U,B.A,B.bl)],r),B.U,B.A,B.O),o),o,o,70,1,o),new A.Pw(n.ax.b,o),A.oF(A.nh(B.cZ,A.a([A.iA(new A.xy(p.w,o),o,1/0),B.DS],r),B.a2,B.cj),1)],r),B.U,B.A,B.O),new A.bQ(B.CE,A.axS(B.DP,!1,new A.amg(p),"Upload log file"),o),o)}}
 A.ami.prototype={
 $0(){var s=this.a
 s.al(new A.amh(s))},
