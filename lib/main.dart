@@ -198,9 +198,9 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
                         icon: const Icon(Icons.info))
                   ])
                 ]))),
-        WavyLineWidget(
-          color: theme.colorScheme.primary,
-        ),
+        // WavyLineWidget(
+        //   color: theme.colorScheme.primary,
+        // ),
         Expanded(
             child: Stack(children: [
           SizedBox(
@@ -208,7 +208,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               child: DesktopDrop(
                 chips: chips,
               )),
-          const IgnorePointer(child: ChristmasLights())
+          // const IgnorePointer(child: ChristmasLights())
         ]))
       ]),
       floatingActionButton: Padding(
