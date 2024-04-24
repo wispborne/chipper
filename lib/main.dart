@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:Chipper/MyTheme.dart';
-import 'package:Chipper/views/lights.dart';
-import 'package:Chipper/views/wavy_painter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fimber/fimber.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
+import 'package:http/http.dart' as http;
 import 'package:platform_info/platform_info.dart';
 import 'package:window_size/window_size.dart';
 
@@ -21,7 +21,7 @@ import 'views/about_view.dart';
 import 'views/desktop_drop_view.dart';
 
 const chipperTitle = "Chipper";
-const chipperVersion = "1.14.2";
+const chipperVersion = "1.15.0";
 const chipperTitleAndVersion = "$chipperTitle v$chipperVersion";
 const chipperSubtitle = "A Starsector log viewer";
 
@@ -47,6 +47,24 @@ class _MyAppState extends ConsumerState<MyApp> {
     AppState.theme.addListener(() {
       setState(() {});
     });
+
+    if (kIsWeb && ref.read(state.logRawContents) == null) {
+      try {
+        final currentUrl = Uri.base;
+        if (currentUrl.queryParameters.containsKey("log")) {
+          final logUrlStr = currentUrl.queryParameters["log"];
+          if (logUrlStr != null) {
+            final logUrl = Uri.parse(logUrlStr);
+            http.get(logUrl).then((response) {
+              final logFile = utf8.decode(response.bodyBytes, allowMalformed: true);
+              ref.read(state.logRawContents.notifier).update((state) => LogFile(logUrl.pathSegments.last, logFile));
+            });
+          }
+        }
+      } catch (e, stackTrace) {
+        Fimber.e("Error loading log from URL.", ex: e, stacktrace: stackTrace);
+      }
+    }
   }
 
   @override

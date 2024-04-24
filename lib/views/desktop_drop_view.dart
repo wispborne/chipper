@@ -43,7 +43,7 @@ class _DesktopDropState extends ConsumerState<DesktopDrop> {
         _parsing = true;
       });
       compute(handleNewLogContent, value.contents).then((LogChips? chips) {
-        AppState.loadedLog.chips = chips?..filename = value.filename;
+        AppState.loadedLog.chips = chips?..filepath = value.filepath;
         setState(() {
           Fimber.i("Parsing false");
           _parsing = false;
